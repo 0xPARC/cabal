@@ -10,11 +10,16 @@ ffiasmPath: "./node_modules/ffiasm"
 circomFlags: "--r1cs --sym --wasm --wat"
 
 circuits:
-  - template: "./circuits/verify_df_winner.circom"
-    component: "VerifyDfWinner"
-    params: [86, 3, 8]
-    pubInputs: ["merkleRoot", "nullifier"]
-    type: "prod"
+  # - template: "./circuits/verify_df_winner.circom"
+  #   component: "VerifyDfWinner"
+  #   params: [86, 3, 8]
+  #   pubInputs: ["merkleRoot", "nullifier"]
+  #   type: "prod"
+  - template: "./circuits/priv_to_pub.circom"
+    component: "ECDSAPrivToPub"
+    params: [86, 3]
+    pubInputs: ["dummyInput"]
+    type: "dev"
 
 ptauFiles:
   1:
