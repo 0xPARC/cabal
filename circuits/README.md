@@ -15,6 +15,6 @@ npx zkey-manager compile -c ./zkeys.config.yml
 npx zkey-manager downloadPtau -c ./zkeys.config.yml
 npx zkey-manager genZkeys -c ./zkeys.config.yml
 
-cp zkeys/ECDSAPrivToPub_86-3-8_prod.0.zkey ../frontend/public/
-cp zkeys/ECDSAPrivToPub_86-3-8_prod_js/ECDSAPrivToPub_86-3-8_prod.wasm ../frontend/public/
+cp zkeys/ECDSAPrivToPub_86-3-8_dev.0.zkey ../frontend/public/
+cp zkeys/ECDSAPrivToPub_86-3_dev_js/ECDSAPrivToPub_86-3_dev.wasm ../frontend/public/
 ```
