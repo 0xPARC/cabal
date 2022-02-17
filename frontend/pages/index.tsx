@@ -1,6 +1,8 @@
 import Head from 'next/head'
 import { useState, useEffect } from 'react'
 
+declare let window: any;
+
 export default function Home() {
   const [metamaskInstalled, setMetamaskInstalled] = useState(false)
 
