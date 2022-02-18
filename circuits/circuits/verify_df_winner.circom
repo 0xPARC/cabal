@@ -1,8 +1,8 @@
 pragma circom 2.0.1;
 
 include "./merkle.circom";
-include "./ecdsa.circom";
-include "./eth.circom";
+include "../circom-ecdsa/circuits/ecdsa.circom";
+include "../circom-ecdsa/circuits/zk-identity/eth.circom";
 
 include "../node_modules/circomlib/circuits/poseidon.circom";
 include "../node_modules/circomlib/circuits/bitify.circom";
@@ -36,7 +36,7 @@ template VerifyDfWinner(n, k, levels) {
   signal address; // for now, num, but could be bit array too
 
   // sig verify
-  component sigVerify = ECDSAVerify(n, k);
+  component sigVerify = ECDSAVerifyNoPubkeyCheck(n, k);
   for (var i = 0; i < k; i++) {
     sigVerify.r[i] <== r[i];
     sigVerify.s[i] <== s[i];
