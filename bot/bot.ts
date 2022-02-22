@@ -34,21 +34,21 @@ client.on("interactionCreate", async (interaction) => {
       });
       return;
     }
-
-    // TODO get the guild_id, member_id from interaction
+    const memberId = interaction.member.id;
+    const guildId = interaction.guildId;
+    const { merkleRoot, roleId } = { merkleRoot: "0x123", roleId: "123" };
     // TODO construct special URL
     // TODO handle case where there are mutiple merkle_root <> role for a single guild_id
-    // nonce checks validity of the URL, so that you can't replay attack with different `memberId`
     // when you go to this URL, the page is rendered with the `guildId`, `merkleRoot`, `roleId`, `memberId` (no API request sent)
     // generate ZK proof using your wallet attesting you control a pubkey in the given merkleRoot
-    // POST request to server with {zkProof, merkleRoot, guildId, roleId, memberId, nonce}
+    // POST request to server with {zkProof, merkleRoot, guildId, roleId, memberId}
     // server validates zkProof with merkleRoot
-    // server validates nonce <> memberId, guildId, roleId, merkleRoot, invalidates nonce
+    // TODO figure out nullifier ...
     // grants memberId in guildId with roleId using discord API
     const row = new MessageActionRow().addComponents(
       new MessageButton()
         .setURL(
-          `http://cabal.xyz/${guildId}?merkleRoot=${merkleRoot}&roleId=${roleId}&memberId=${memberId}&nonce=${nonce}`
+          `http://cabal.xyz/${guildId}?merkleRoot=${merkleRoot}&roleId=${roleId}&memberId=${memberId}`
         )
         .setLabel("Generate ZK Proof")
         .setStyle("LINK")
@@ -79,11 +79,11 @@ client.on("interactionCreate", async (interaction) => {
     const role_name = role.role.name;
     console.log(`Selected role id is ${role_id}, with name ${role_name}`);
     // TODO: store guild_id, merkle_root, role_id, role_name
-    // store rold_id, role_name
     await interaction.reply({
       content: `Successfully configured verification of inclusion in Merkle root ${selectedMerkleRoot} to be assigned role ${role_name}`,
     });
   } // TODO implement deletion of role assignment
+  // TODO implement listing assignment of merkleRoot <> roles
 });
 
 client.login(process.env.DISCORD_TOKEN);
