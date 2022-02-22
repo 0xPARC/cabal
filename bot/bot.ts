@@ -14,11 +14,13 @@ client.on("guildCreate", async (guild) => {
   const createdChannel = await guild.channels.create("cabal-join", {
     reason: "A channel where users can get verified with cabal.",
   });
-  createdChannel.send("Type /verify (slash-command) to get started!");
+  await createdChannel.send("Type /verify (slash-command) to get started!");
   const configureChannel = await guild.channels.create("cabal-configure", {
     reason: "A channel where the admins can configure the cabal-bot.",
   });
-  configureChannel.send("Type /configure (slash-command) to get started!");
+  await configureChannel.send(
+    "Type /configure (slash-command) to get started!"
+  );
 });
 
 client.on("interactionCreate", async (interaction) => {
@@ -33,9 +35,21 @@ client.on("interactionCreate", async (interaction) => {
       return;
     }
 
+    // TODO get the guild_id, member_id from interaction
+    // TODO construct special URL
+    // TODO handle case where there are mutiple merkle_root <> role for a single guild_id
+    // nonce checks validity of the URL, so that you can't replay attack with different `memberId`
+    // when you go to this URL, the page is rendered with the `guildId`, `merkleRoot`, `roleId`, `memberId` (no API request sent)
+    // generate ZK proof using your wallet attesting you control a pubkey in the given merkleRoot
+    // POST request to server with {zkProof, merkleRoot, guildId, roleId, memberId, nonce}
+    // server validates zkProof with merkleRoot
+    // server validates nonce <> memberId, guildId, roleId, merkleRoot, invalidates nonce
+    // grants memberId in guildId with roleId using discord API
     const row = new MessageActionRow().addComponents(
       new MessageButton()
-        .setURL("http://join-cabal.xyz")
+        .setURL(
+          `http://cabal.xyz/${guildId}?merkleRoot=${merkleRoot}&roleId=${roleId}&memberId=${memberId}&nonce=${nonce}`
+        )
         .setLabel("Generate ZK Proof")
         .setStyle("LINK")
     );
@@ -43,7 +57,7 @@ client.on("interactionCreate", async (interaction) => {
     const embed = new MessageEmbed()
       .setColor("#0099ff")
       .setTitle("cabal.xyz")
-      .setURL("http://join-cabal.xyz")
+      .setURL("http://cabal.xyz")
       .setDescription(
         "Use this custom link to create a ZK proof for verification."
       );
@@ -56,17 +70,15 @@ client.on("interactionCreate", async (interaction) => {
     });
   } else if (interaction.commandName === "configure") {
     // TODO only make this work in the cabal-configure channel
-    // console.log(interaction);
-    // console.log(interaction.options.get("merkle_root"));
+    // interaction.options.get("merkle_root")
     // { name: 'merkle_root', type: 'STRING', value: 'asdf' }
     const selectedMerkleRoot = interaction.options.get("merkle_root").value;
     console.log("Selected Merkle Root is: ", selectedMerkleRoot);
-    // console.log(interaction.options.get("verified_role"));
     const role = interaction.options.get("verified_role");
     const role_id = role.value; // same as role.role.id
     const role_name = role.role.name;
     console.log(`Selected role id is ${role_id}, with name ${role_name}`);
-    // TODO: store guild_id, merkle_root, role_id
+    // TODO: store guild_id, merkle_root, role_id, role_name
     // store rold_id, role_name
     await interaction.reply({
       content: `Successfully configured verification of inclusion in Merkle root ${selectedMerkleRoot} to be assigned role ${role_name}`,
