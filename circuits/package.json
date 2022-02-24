@@ -10,7 +10,6 @@
   "license": "GPLv3",
   "dependencies": {
     "circom_tester": "0.0.9",
-    "circomlib": "2.0.2",
     "elliptic": "^6.5.4",
     "ffjavascript": "0.2.46"
   },

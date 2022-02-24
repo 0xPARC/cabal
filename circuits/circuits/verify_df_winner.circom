@@ -4,9 +4,6 @@ include "./merkle.circom";
 include "../circom-ecdsa/circuits/ecdsa.circom";
 include "../circom-ecdsa/circuits/zk-identity/eth.circom";
 
-include "../node_modules/circomlib/circuits/poseidon.circom";
-include "../node_modules/circomlib/circuits/bitify.circom";
-
 /*
  * Prove: I know (sig, msg, pubkey, nullifier, nullifierHash, merkle_branch, merkle_root) s.t.:
  * - sig == ecdsa_verify(r, s, msghash, pubkey)

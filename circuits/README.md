@@ -3,7 +3,12 @@ https://docs.circom.io/getting-started/installation/
 
 You should probably also install VSCode extension to work with circom.
 
-Run `yarn install` to install dependencies.
+To install dependencies.
+```
+yarn install
+cd circom-ecdsa
+yarn install
+```
 
 ```
 mkdir zkeys
