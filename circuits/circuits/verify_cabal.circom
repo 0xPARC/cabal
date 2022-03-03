@@ -32,13 +32,14 @@ template VerifyCabal(n, k, levels) {
   // NOTE: chunked into k n-bit registers for easy use by ECDSAVerify
   signal chunkedPubkey[2][k];
   signal pubkeyBits[512];
-  signal address; // for now, num, but could be bit array too
+  signal address;
 
   // pubkey = ECDSAPrivToPub(privkey) 
   component privToPub = ECDSAPrivToPub(n, k);
   for (var i = 0; i < k; i++) {
     privToPub.privkey[i] <== privkey[i];
-
+  }
+  for (var i = 0; i < k; i++) {
     chunkedPubkey[0][i] <== privToPub.pubkey[0][i];
     chunkedPubkey[1][i] <== privToPub.pubkey[1][i];
   }
