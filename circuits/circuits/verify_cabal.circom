@@ -4,7 +4,7 @@ include "./merkle.circom";
 include "./eth.circom";
 
 include "../circom-ecdsa/circuits/ecdsa.circom";
-include "../circom-ecdsa/circuits/vocdoni-keccak/.circom";
+include "../circom-ecdsa/circuits/vocdoni-keccak/keccak.circom";
 
 include "../node_modules/circomlib/circuits/poseidon.circom";
 include "../node_modules/circomlib/circuits/bitify.circom";
