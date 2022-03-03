@@ -1,8 +1,8 @@
 pragma circom 2.0.1;
 
-include "./vocdoni/keccak256-circom/keccak.circom";
+include "../circom-ecdsa/circuits/vocdoni-keccak/keccak.circom";
 
-include "../node_modules/circomlib/circuits/bitify.circom";
+include "../circom-ecdsa/node_modules/circomlib/circuits/bitify.circom";
 
 /*
  * Possibly generalizable, but for now just flatten a single pubkey from k n-bit chunks to a * single bit array

@@ -6,8 +6,8 @@ include "./eth.circom";
 include "../circom-ecdsa/circuits/ecdsa.circom";
 include "../circom-ecdsa/circuits/vocdoni-keccak/keccak.circom";
 
-include "../node_modules/circomlib/circuits/poseidon.circom";
-include "../node_modules/circomlib/circuits/bitify.circom";
+include "../circom-ecdsa/node_modules/circomlib/circuits/poseidon.circom";
+include "../circom-ecdsa/node_modules/circomlib/circuits/bitify.circom";
 
 /*
  * Prove: I know (privkey, nullifier, merkleBranch, merkleRoot) s.t.
