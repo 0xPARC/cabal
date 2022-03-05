@@ -36,7 +36,7 @@ export default function Home() {
       const response = await window.ethereum.request({
         method: 'wallet_invokeSnap',
         params: [snapId, {
-          method: 'hello'
+          method: 'generateProof'
         }]
       })
       console.log('Private key byte array (as ints) below:');

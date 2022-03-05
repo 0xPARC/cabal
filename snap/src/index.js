@@ -1,11 +1,10 @@
-import {deriveBIP44AddressKey} from '@metamask/key-tree';
-
-// NOTE: this shows that we 'include' files in snap distribution during packaging
-import * as testData from './test.json';
+import { deriveBIP44AddressKey } from '@metamask/key-tree';
+import { getInput } from './snark_utils/get_input';
+import { generateProof } from './snark_utils/generate_proof';
 
 wallet.registerRpcMessageHandler(async (originString, requestObject) => {
   switch (requestObject.method) {
-    case 'hello':
+    case 'generateProof':
       const ethNode = await wallet.request({
         method: 'snap_getBip44Entropy_60',
       });
@@ -17,11 +16,11 @@ wallet.registerRpcMessageHandler(async (originString, requestObject) => {
       });
       const privateKey = extendedPrivateKey.slice(0, 32);
 
-      // NOTE: this is where we would process this for proof generation!
+      const input = await getInput(privateKey);
+      const proof = await generateProof(input);
 
       return {
-        privateKey,
-        testData
+        proof
       };
     default:
       throw new Error('Method not found.');
