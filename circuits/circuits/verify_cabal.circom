@@ -1,17 +1,18 @@
 pragma circom 2.0.1;
 
 include "./merkle.circom";
-include "./eth.circom";
 
 include "../circom-ecdsa/circuits/ecdsa.circom";
+include "../circom-ecdsa/circuits/zk-identity/eth.circom";
 include "../circom-ecdsa/circuits/vocdoni-keccak/keccak.circom";
 
 include "../circom-ecdsa/node_modules/circomlib/circuits/poseidon.circom";
 include "../circom-ecdsa/node_modules/circomlib/circuits/bitify.circom";
 
+
 /*
  * Prove: I know (privkey, nullifier, merkleBranch, merkleRoot) s.t.
- * - address == pubkey_to_address(priv_to_pub(privkey)) 
+ * - address == pubkey_to_address(priv_to_pub(privkey))
  * - merkle_verify(address, merkleRoot, merklePathElements, merklePathIndices)
  * - nullifier = poseidon(privkey)
  *
@@ -34,7 +35,7 @@ template VerifyCabal(n, k, levels) {
   signal pubkeyBits[512];
   signal address;
 
-  // pubkey = ECDSAPrivToPub(privkey) 
+  // pubkey = ECDSAPrivToPub(privkey)
   component privToPub = ECDSAPrivToPub(n, k);
   for (var i = 0; i < k; i++) {
     privToPub.privkey[i] <== privkey[i];
@@ -70,6 +71,6 @@ template VerifyCabal(n, k, levels) {
 
   // nullifier check
   component nullifierCheck = Poseidon(1);
-  nullifierCheck.inputs[0] <== privkey[0]; // first register of privkey should be sufficient 
+  nullifierCheck.inputs[0] <== privkey[0]; // first register of privkey should be sufficient
   nullifierCheck.out === nullifier;
 }
