@@ -2,7 +2,7 @@
 out: "./zkeys"
 
 # Make sure that these paths are correct
-circomPath: "../../../../.cargo/bin/circom"
+circomPath: "~/.cargo/bin/circom"
 snarkjsPath: "./node_modules/snarkjs/build/cli.cjs"
 circomRuntimePath: "./node_modules/circom_runtime"
 ffiasmPath: "./node_modules/ffiasm"
@@ -10,16 +10,17 @@ ffiasmPath: "./node_modules/ffiasm"
 circomFlags: "--r1cs --sym --wasm --wat"
 
 circuits:
-  # - template: "./circuits/verify_df_winner.circom"
-  #   component: "VerifyDfWinner"
-  #   params: [86, 3, 8]
-  #   pubInputs: ["merkleRoot", "nullifier"]
-  #   type: "prod"
-  - template: "./circuits/priv_to_pub.circom"
-    component: "ECDSAPrivToPub"
-    params: [86, 3]
-    pubInputs: ["dummyInput"]
-    type: "dev"
+  - template: "./circuits/verify_cabal.circom"
+    component: "VerifyCabal"
+    params: [86, 3, 10]
+    pubInputs: ["merkleRoot", "nullifier"]
+    type: "prod"
+  # NOTE: was using this for nullifier witness gen
+  #- template: "./circom-ecdsa/node_modules/circomlib/circuits/poseidon.circom"
+    #component: "Poseidon"
+    #params: [1]
+    #pubInputs: ["inputs"]
+    #type: "dev"
 
 ptauFiles:
   1:
