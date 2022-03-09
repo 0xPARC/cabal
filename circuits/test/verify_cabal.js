@@ -40,6 +40,8 @@ describe("verify cabal e2e", function () {
   it("e2e test 1", async () => {
     //console.log(circuit);
     // random int
+    // 0xCED2F1E92E4DFD7F4EE992040D34553A549A8D1243BBCD4BCCCA4E07BBB727DF (privkey)
+    // 0xDE3002E0e11300d44e96929576F71958f5DDc859 (address)
     const privkey = 93549154299169935420023221163296845505523953610183896504176354567359433222111n;
     const privkey_tuple = bigint_to_tuple(privkey);
     const nullifier = poseidon.F.toObject(
