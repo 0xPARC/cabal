@@ -15,12 +15,6 @@ circuits:
     params: [86, 3, 10]
     pubInputs: ["merkleRoot", "nullifier"]
     type: "prod"
-  # NOTE: was using this for nullifier witness gen
-  #- template: "./circom-ecdsa/node_modules/circomlib/circuits/poseidon.circom"
-    #component: "Poseidon"
-    #params: [1]
-    #pubInputs: ["inputs"]
-    #type: "dev"
 
 ptauFiles:
   1:
