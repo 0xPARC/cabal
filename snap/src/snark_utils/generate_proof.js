@@ -3,8 +3,8 @@
 import { groth16 } from 'snarkjs'
 import builder from './witness_calculator'
 
-const zkeyPath = "./VerifyCabal_86-3-8_prod.0.zkey"
-const wasmPath = "./VerifyCabal_86-3-8_prod.wasm"
+const zkeyPath = "./VerifyCabal_86-3-10_prod.0.zkey"
+const wasmPath = "./VerifyCabal_86-3-10_prod.wasm"
 
 export const generateProof = async (input) => {
     const zkeyResp = await fetch(zkeyPath);
