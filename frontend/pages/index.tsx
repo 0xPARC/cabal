@@ -73,12 +73,13 @@ export default function Home() {
         </h1>
 
         <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
-          <button className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700" onClick={metamaskInstalled ? setupWeb3 : () => {}}>
+          {!address ? <button className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700" onClick={metamaskInstalled ? setupWeb3 : () => {}}>
             {/* TODO disable button when metamask is not installed */}
             {metamaskInstalled
               ? 'Connect to Metamask'
               : 'Metamask not installed'}
-          </button>
+          </button> : "Welcome to Cabal!" }
+          
 
           {/* <a
             href="https://nextjs.org/docs"
