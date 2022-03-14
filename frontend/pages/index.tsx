@@ -1,15 +1,54 @@
 import Head from 'next/head'
+import { ethers } from 'ethers'
 import { useState, useEffect } from 'react'
+import styled from 'styled-components'
+import { Profile } from '@ensdomains/thorin'
 
 declare let window: any;
 
+const AddressContainer = styled('div')`
+  padding: 10px;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+`
+
+type AddressProps = { address: string}
+
+function Address({ address }: AddressProps){
+  return <AddressContainer></AddressContainer>
+}
+
+const isMetaMaskInstalled = () => {
+  //Have to check the ethereum binding on the window object to see if it's installed
+  const { ethereum } = window
+  return Boolean(ethereum && ethereum.isMetaMask)
+}
+
 export default function Home() {
   const [metamaskInstalled, setMetamaskInstalled] = useState(false)
+  const [address, setAddress] = useState<string|undefined>(undefined)
+  const [name, setName] = useState<string|undefined>(undefined)
 
-  const isMetaMaskInstalled = () => {
-    //Have to check the ethereum binding on the window object to see if it's installed
-    const { ethereum } = window
-    return Boolean(ethereum && ethereum.isMetaMask)
+  async function setupWeb3(){
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+  
+    // MetaMask requires requesting permission to connect users accounts
+    await provider.send("eth_requestAccounts", []);
+    
+    // The MetaMask plugin also allows signing transactions to
+    // send ether and pay to change state within the blockchain.
+    // For this, you need the account signer...
+    const signer = provider.getSigner();
+    
+    const addr = await signer.getAddress()
+    try {
+      const name = await provider.lookupAddress(addr)
+      setName(name)
+    } catch (_){
+    }
+    setAddress(addr)
   }
 
   useEffect(() => {
@@ -25,6 +64,7 @@ export default function Home() {
       </Head>
 
       <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
+        <header>{address && <AddressContainer><Profile address={address} ensName={name ? name : undefined}/></AddressContainer>}</header>
         <h1 className="text-6xl font-bold">
           Welcome to{' '}
           <a className="text-blue-600" href="https://nextjs.org">
@@ -33,7 +73,7 @@ export default function Home() {
         </h1>
 
         <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
-          <button className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700">
+          <button className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700" onClick={metamaskInstalled ? setupWeb3 : () => {}}>
             {/* TODO disable button when metamask is not installed */}
             {metamaskInstalled
               ? 'Connect to Metamask'
