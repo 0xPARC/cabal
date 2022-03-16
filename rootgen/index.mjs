@@ -7,6 +7,7 @@ import pkg  from 'csvtojson';
 const { csv } = pkg;
 
 const poseidon = await buildPoseidon();
+const F = poseidon.F; // poseidon finite field
 
 // NOTE: picked this as the null field element because it's known to not be in the tree
 const NULL_NODE = 1;
@@ -14,7 +15,7 @@ const NULL_NODE = 1;
 // TODO: add other addresses we have access to?
 const TESTER_ADDRS = [
   '0xDE3002E0e11300d44e96929576F71958f5DDc859' // address in sample_input.json
-]
+].map(Number).map(BigInt);
 
 // NOTE: prod designates that we don't include TESTER_ADDRS as winners
 async function buildTree(winners, prod = false) {
@@ -50,8 +51,8 @@ async function buildTree(winners, prod = false) {
         leafToPathIndices[leaf].push(1);
       }
 
-      let parentBytes = poseidon([Number(child1), Number(child2)]);
-      let parent = '0x' + Buffer.from(parentBytes).toString('hex');
+      let poseidonRes = poseidon([child1, child2]);
+      let parent = F.toObject(poseidonRes);
 
       nodeToLeaves[parent] = child1Leaves.concat(child2Leaves);
 
@@ -82,9 +83,15 @@ async function getDevconAddresses() {
     await getAddresses('data/Devcon2 by Piper Merriam.csv')
   );
 
-  return [...new Set(allAddresses)]
+  return [...new Set(allAddresses)].map(Number).map(BigInt);
 }
 
 let addresses = await getDevconAddresses();
 let tree = await buildTree(addresses);
-writeFileSync('output/tree.json', JSON.stringify(tree, null, 2));
+writeFileSync('output/tree.json', JSON.stringify(
+  tree,
+  (k, v) =>  typeof v == 'bigint' ? v.toString() : v,
+  2
+));
+
+export { buildTree };
