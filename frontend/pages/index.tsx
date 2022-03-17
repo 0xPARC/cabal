@@ -1,8 +1,8 @@
 import Head from 'next/head'
-import { ethers } from 'ethers'
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Profile } from '@ensdomains/thorin'
+import { setupWeb3 } from './web3'
 
 declare let window: any
 
@@ -12,23 +12,27 @@ const isMetaMaskInstalled = () => {
   return Boolean(ethereum && ethereum.isMetaMask)
 }
 
+interface Network {
+  name: string
+}
+
+const Network = styled('div')`
+  padding: 5px 8px;
+  margin-right: 8px;
+  color: white;
+  background: rgb(73, 179, 147);
+  border-radius: 6px;
+`
+
 export default function Home() {
   const [metamaskInstalled, setMetamaskInstalled] = useState(false)
   const [address, setAddress] = useState<string | undefined>(undefined)
   const [name, setName] = useState<string | undefined>(undefined)
   const [avatar, setAvatar] = useState<string | undefined>(undefined)
+  const [network, setNetwork] = useState<Network | undefined>(undefined)
+  const [isWeb3Ready, setIsWeb3Ready] = useState<boolean | undefined>(undefined)
 
-  async function setupWeb3() {
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-
-    // MetaMask requires requesting permission to connect users accounts
-    await provider.send('eth_requestAccounts', [])
-
-    // The MetaMask plugin also allows signing transactions to
-    // send ether and pay to change state within the blockchain.
-    // For this, you need the account signer...
-    const signer = provider.getSigner()
-
+  async function setupProfileInfo(signer, provider){
     const addr = await signer.getAddress()
     setAddress(addr)
     const name = await provider.lookupAddress(addr)
@@ -37,6 +41,12 @@ export default function Home() {
       const avatar = await provider.getAvatar(name)
       if (avatar) setAvatar(avatar)
     }
+  }
+
+  async function setup(){
+    const { signer, provider, network } = await setupWeb3()
+    setNetwork(network)
+    await setupProfileInfo(signer, provider)
   }
 
   useEffect(() => {
@@ -54,7 +64,8 @@ export default function Home() {
       <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
         <header>
           {address && (
-            <div className="fixed top-2.5 right-2.5 p-2.5">
+            <div className="fixed top-2.5 right-2.5 p-2.5 flex items-center">
+              {network && <Network>{network.name}</Network>}
               <Profile address={address} ensName={name ? name : undefined}avatar={avatar} />
             </div>
           )}
@@ -70,7 +81,7 @@ export default function Home() {
           {!address ? (
             <button
               className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
-              onClick={metamaskInstalled ? setupWeb3 : () => {}}
+              onClick={metamaskInstalled ? setup : () => {}}
             >
               {/* TODO disable button when metamask is not installed */}
               {metamaskInstalled
