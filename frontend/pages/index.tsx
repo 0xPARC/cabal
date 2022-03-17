@@ -29,6 +29,7 @@ export default function Home() {
   const [metamaskInstalled, setMetamaskInstalled] = useState(false)
   const [address, setAddress] = useState<string | undefined>(undefined)
   const [name, setName] = useState<string | undefined>(undefined)
+  const [avatar, setAvatar] = useState<string | undefined>(undefined)
 
   async function setupWeb3() {
     const provider = new ethers.providers.Web3Provider(window.ethereum)
@@ -42,9 +43,13 @@ export default function Home() {
     const signer = provider.getSigner()
 
     const addr = await signer.getAddress()
-    const name = await provider.lookupAddress(addr)
-    if (name) setName(name)
     setAddress(addr)
+    const name = await provider.lookupAddress(addr)
+    if (name) {
+      setName(name)
+      const avatar = await provider.getAvatar(name)
+      if (avatar) setAvatar(avatar)
+    }
   }
 
   useEffect(() => {
@@ -63,7 +68,7 @@ export default function Home() {
         <header>
           {address && (
             <div className="fixed top-2.5 right-2.5 p-2.5">
-              <Profile address={address} ensName={name ? name : undefined} />
+              <Profile address={address} ensName={name ? name : undefined}avatar={avatar} />
             </div>
           )}
         </header>
