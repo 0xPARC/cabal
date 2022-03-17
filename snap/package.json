@@ -27,6 +27,6 @@
   },
   "dependencies": {
     "@metamask/key-tree": "3.0.1",
-    "snarkjs": "^0.4.14"
+    "snarkjs": "^0.4.15"
   }
 }
