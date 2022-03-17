@@ -6,19 +6,6 @@ import { Profile } from '@ensdomains/thorin'
 
 declare let window: any
 
-// const AddressContainer = styled('div')`
-//   padding: 10px;
-//   position: fixed;
-//   top: 10px;
-//   right: 10px;
-// `
-
-// type AddressProps = { address: string }
-
-// function Address({ address }: AddressProps) {
-//   return <AddressContainer></AddressContainer>
-// }
-
 const isMetaMaskInstalled = () => {
   //Have to check the ethereum binding on the window object to see if it's installed
   const { ethereum } = window
