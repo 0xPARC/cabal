@@ -30,9 +30,12 @@ export default function Home() {
   const [name, setName] = useState<string | undefined>(undefined)
   const [avatar, setAvatar] = useState<string | undefined>(undefined)
   const [network, setNetwork] = useState<Network | undefined>(undefined)
-  const [isWeb3Ready, setIsWeb3Ready] = useState<boolean | undefined>(undefined)
+  const [metamaskConnected, setMetamaskConnected] = useState(false)
 
-  async function setupProfileInfo(signer, provider){
+  // TODO: this is only for local dev
+  const snapId = `local:http://localhost:8082`;
+
+  async function setupProfileInfo(signer: any, provider: any){
     const addr = await signer.getAddress()
     setAddress(addr)
     const name = await provider.lookupAddress(addr)
@@ -47,7 +50,37 @@ export default function Home() {
     const { signer, provider, network } = await setupWeb3()
     setNetwork(network)
     await setupProfileInfo(signer, provider)
+    await setupSnap()
+    setMetamaskConnected(true)
   }
+
+  // Get permissions to interact with and install the snap
+  async function setupSnap(){
+    await window.ethereum.request({
+      method: 'wallet_enable',
+      params: [{
+        wallet_snap: { [snapId]: {} },
+      }]
+    })
+  }
+
+  async function generateProof(){
+    try {
+      const response = await window.ethereum.request({
+        method: 'wallet_invokeSnap',
+        params: [snapId, {
+          method: 'generateProof'
+        }]
+      })
+      console.log('Private key byte array (as ints) below:');
+      console.log(response);
+    } catch (err) {
+      console.log('ERROR');
+      console.error(err)
+      alert('Problem happened: ' + err.message || err)
+    }
+  }
+
 
   useEffect(() => {
     const installed = isMetaMaskInstalled()
@@ -92,6 +125,17 @@ export default function Home() {
             'Connected.'
           )}
 
+          {metamaskConnected &&
+            <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
+              <button
+                className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
+                onClick={generateProof}
+              >
+                Generate Proof
+              </button>
+            </div>
+          }
+
           {/* <a
             href="https://nextjs.org/docs"
             className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
@@ -102,6 +146,7 @@ export default function Home() {
             </p>
           </a> */}
         </div>
+      </main>
 
       {/* <footer className="flex h-24 w-full items-center justify-center border-t">
         <a
