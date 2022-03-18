@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "chai": "^4.3.6",
+    "circomlibjs": "0.1.1",
     "mocha": "^9.2.0",
     "zkey-manager": "^0.1.2"
   }
