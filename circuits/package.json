@@ -1,5 +1,5 @@
 {
-  "name": "zk-collab-land-circuits",
+  "name": "cabal-circuits",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,7 +10,6 @@
   "license": "GPLv3",
   "dependencies": {
     "circom_tester": "0.0.9",
-    "circomlib": "2.0.2",
     "elliptic": "^6.5.4",
     "ffjavascript": "0.2.46"
   },

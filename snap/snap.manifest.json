@@ -1,0 +1,22 @@
+{
+  "version": "1.0.0",
+  "description": "Cabal Snap",
+  "proposedName": "cabal-snap",
+  "source": {
+    "shasum": "ALsyDXcnu0V3y5Wax9gnM5h7Zqu7mVKXe38t5Hj90Cc=",
+    "location": {
+      "npm": {
+        "filePath": "dist/bundle.js",
+        "packageName": "cabal-snap",
+        "registry": "https://registry.npmjs.org"
+      }
+    }
+  },
+  "initialPermissions": {
+    "snap_confirm": {},
+    "snap_getBip44Entropy_60": {},
+    "snap_manageState": {},
+    "endowment:wasm": {}
+  },
+  "manifestVersion": "0.1"
+}
