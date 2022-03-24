@@ -3,6 +3,9 @@ import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Profile } from '@ensdomains/thorin'
 import { setupWeb3 } from './web3'
+import { useRouter } from 'next/router'
+import { validateQueryParams } from './utils'
+
 
 declare let window: any
 
@@ -26,12 +29,16 @@ const Network = styled('div')`
 `
 
 export default function Home() {
+  const router = useRouter()
   const [metamaskInstalled, setMetamaskInstalled] = useState(false)
   const [address, setAddress] = useState<string | undefined>(undefined)
   const [name, setName] = useState<string | undefined>(undefined)
   const [avatar, setAvatar] = useState<string | undefined>(undefined)
   const [network, setNetwork] = useState<Network | undefined>(undefined)
   const [metamaskConnected, setMetamaskConnected] = useState(false)
+
+  const { merkleRoot, userId, serverId } = router.query
+  const hasValidProofInput = validateQueryParams(merkleRoot, userId, serverId)
 
   // TODO: this is only for local dev
   const snapId = `local:http://localhost:8082`;
@@ -49,9 +56,10 @@ export default function Home() {
 
   async function setup(){
     const { signer, provider, network } = await setupWeb3()
-    setIsWeb3Ready(true)
     setNetwork(network)
+    
     await setupProfileInfo(signer, provider)
+    setMetamaskConnected(true)
     await setupSnap()
     setMetamaskConnected(true)
   }
@@ -68,6 +76,8 @@ export default function Home() {
 
   async function generateProof(){
     try {
+      // TODO use query param values inside snap
+      // merkleRoot, userId, serverId
       const response = await window.ethereum.request({
         method: 'wallet_invokeSnap',
         params: [snapId, {
@@ -126,8 +136,9 @@ export default function Home() {
           ) : (
             'Connected.'
           )}
+          {console.log(metamaskConnected)}
 
-          {metamaskConnected &&
+          {metamaskConnected && hasValidProofInput && 
             <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
               <button
                 className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
@@ -137,16 +148,6 @@ export default function Home() {
               </button>
             </div>
           }
-
-          {/* <a
-            href="https://nextjs.org/docs"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Documentation &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Find in-depth information about Next.js features and API.
-            </p>
-          </a> */}
         </div>
       </main>
 
