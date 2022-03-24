@@ -5,7 +5,7 @@ import { Profile } from '@ensdomains/thorin'
 import { setupWeb3 } from './web3'
 import { useRouter } from 'next/router'
 import { validateQueryParams } from './utils'
-
+import Action from './components/Action'
 
 declare let window: any
 
@@ -36,6 +36,8 @@ export default function Home() {
   const [avatar, setAvatar] = useState<string | undefined>(undefined)
   const [network, setNetwork] = useState<Network | undefined>(undefined)
   const [metamaskConnected, setMetamaskConnected] = useState(false)
+  const [generatingProof, setGeneratingProof] = useState(false)
+  const [proof, setProof] = useState<string | undefined>(undefined)
 
   const { merkleRoot, userId, serverId } = router.query
   const hasValidProofInput = validateQueryParams(merkleRoot, userId, serverId)
@@ -78,19 +80,27 @@ export default function Home() {
     try {
       // TODO use query param values inside snap
       // merkleRoot, userId, serverId
+      setGeneratingProof(true)
       const response = await window.ethereum.request({
         method: 'wallet_invokeSnap',
         params: [snapId, {
           method: 'generateProof'
         }]
       })
+      setGeneratingProof(false)
       console.log('Private key byte array (as ints) below:');
       console.log(response);
+      //replace with proof
+      setProof("12345")
     } catch (err) {
       console.log('ERROR');
       console.error(err)
       alert('Problem happened: ' + err.message || err)
     }
+  }
+
+  function submitProof(){
+    console.log('submitting proof')
   }
 
 
@@ -138,21 +148,20 @@ export default function Home() {
           )}
           {console.log(metamaskConnected)}
 
-          {metamaskConnected && hasValidProofInput && 
-            <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
-              <button
-                className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
-                onClick={generateProof}
-              >
-                Generate Proof
-              </button>
-            </div>
-          }
+          {metamaskConnected && hasValidProofInput && <Action onClick={generateProof} loading={generatingProof} loadingText="Generating Proof..." completed={!!proof} completedText="Proof generated">
+             Generate Proof
+            </Action>}
 
           {
             !hasValidProofInput && <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
               No proof input detected.
           </div>
+          }
+
+          {
+            metamaskConnected && proof && <Action onClick={submitProof} loading={false} loadingText="Submitting Proof..." completed={false} completedText="Proof verified!">
+            Submit Proof
+           </Action>
           }
         </div>
       </main>
