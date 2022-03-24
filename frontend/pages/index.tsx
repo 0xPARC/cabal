@@ -13,7 +13,8 @@ const isMetaMaskInstalled = () => {
 }
 
 interface Network {
-  name: string
+  name: string,
+  chainId: number
 }
 
 const Network = styled('div')`
@@ -45,6 +46,7 @@ export default function Home() {
 
   async function setup(){
     const { signer, provider, network } = await setupWeb3()
+    setIsWeb3Ready(true)
     setNetwork(network)
     await setupProfileInfo(signer, provider)
   }
