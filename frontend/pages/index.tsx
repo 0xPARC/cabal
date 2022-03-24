@@ -148,6 +148,12 @@ export default function Home() {
               </button>
             </div>
           }
+
+          {
+            !hasValidProofInput && <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
+              No proof input detected.
+          </div>
+          }
         </div>
       </main>
 
