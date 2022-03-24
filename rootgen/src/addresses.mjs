@@ -18,4 +18,22 @@ async function getDevconAddresses(dataDir) {
   return [...new Set(allAddresses)].map(Number).map(BigInt);
 }
 
-export { getDevconAddresses }
+async function getYearToAddresses(dataDir) {
+  const Addresses1 = await getAddresses(`${dataDir}/Devcon1.csv`);
+  const Addreses2 = (await getAddresses(`${dataDir}/Devcon2.csv`)).concat(
+    await getAddresses(`${dataDir}/Devcon2 by Piper Merriam.csv`)
+  );
+  const Addresses3 = await getAddresses(`${dataDir}/Devcon3.csv`);
+  const Addresses4 = await getAddresses(`${dataDir}/Devcon4.csv`);
+  const Addresses5 = await getAddresses(`${dataDir}/Devcon5.csv`);
+
+  return {
+    1: Addresses1,
+    2: [...new Set(Addreses2)],
+    3: Addresses3,
+    4: Addresses4,
+    5: Addresses5
+  }
+}
+
+export { getDevconAddresses, getYearToAddresses }
