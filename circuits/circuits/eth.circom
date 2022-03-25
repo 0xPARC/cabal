@@ -53,5 +53,3 @@ template ECDSAPrivToAddress(n, k) {
   }
   address <== pkToAddress.address;
 }
-
-component main = ECDSAPrivToAddress(64, 4);
