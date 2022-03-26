@@ -16,7 +16,6 @@ function bigintToTuple(x) {
   return ret;
 }
 
-// NOTE: oh! maybe we need to add the 0x04 prefix before address
 function pubkeyStrToXY(pk) {
   // remove 0x04, then divide in 2
   let pkUnprefixed = pk.substring(4);
@@ -53,6 +52,39 @@ describe("ChunkedPubkeyToAddress", function() {
             bigintToTuple(x),
             bigintToTuple(y)
           ]
+        },
+        true
+      );
+      await circuit.assertOut(w, {address: BigInt(address)})
+      await circuit.checkConstraints(w);
+    }
+  });
+});
+
+describe.only("ECDSAPrivToAddress", function() {
+  this.timeout(1000 * 1000);
+
+  it("test 1", async () => {
+    let circuit = await wasm_tester(path.join(__dirname, "circuits", "priv_to_address_64_4.circom"));
+
+    // NOTE: same as circom-ecdsa test cases
+    let testPrivs = [
+      '0xc3c50b95a58172a4cce3e76629276a627a6d8626bcbbb7762e521207bbc59761',
+      '0x535d586f561155c728815b18c7a6836e4c8863d9a24a571818c49ad50a6a079c',
+      '0xc7d5ce7bee4ad0cd41c16aa685016b14ac5547575b84a574324c1fdd7eb54619',
+      '0xf55ac2f52c4b3712a7819ffdc4be600315e57767c081a8d43b2e41cdb0eda0cb'
+    ]
+
+    for (let priv of testPrivs) {
+      let address = ethers.utils.computeAddress(priv);
+
+      console.log(`priv: ${priv}`);
+      console.log(`priv tuple: ${bigintToTuple(BigInt(priv))}`);
+      console.log(`address: ${address}`);
+
+      const w = await circuit.calculateWitness(
+        {
+          privkey: bigintToTuple(BigInt(priv))
         },
         true
       );
