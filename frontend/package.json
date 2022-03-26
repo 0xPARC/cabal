@@ -4,7 +4,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "bot-start": "ts-node bot.ts"
+    "bot": "ts-node bot.ts"
   },
   "dependencies": {
     "@ensdomains/thorin": "0.4.1",
