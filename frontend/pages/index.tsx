@@ -11,7 +11,7 @@ declare let window: any
 //   position: fixed;
 //   top: 10px;
 //   right: 10px;
-// `
+// ``
 
 // type AddressProps = { address: string }
 
@@ -55,7 +55,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center py-2">
       <Head>
-        <title>Create Next App</title>
+        <title>cabal.xyz</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
@@ -68,9 +68,9 @@ export default function Home() {
           )}
         </header>
         <h1 className="text-6xl font-bold">
-          Coming Soon{' '}
+          Coming soon{' '}
           <a className="text-blue-600" href="https://cabal.xyz">
-            cabal.xyz
+            cabal.xyz 👻
           </a>
         </h1>
 
