@@ -1,8 +1,8 @@
 pragma circom 2.0.1;
 
 include "./merkle.circom";
+include "./eth.circom";
 
-include "../circom-ecdsa/circuits/ecdsa.circom";
 include "../circom-ecdsa/circuits/zk-identity/eth.circom";
 include "../circom-ecdsa/circuits/vocdoni-keccak/keccak.circom";
 
@@ -30,37 +30,19 @@ template VerifyCabal(n, k, levels) {
   signal input merklePathIndices[levels];
   signal input merkleRoot; // of eth addresses
 
-  // NOTE: chunked into k n-bit registers for easy use by ECDSAVerify
+  // NOTE: chunked into k n-bit registers for easy use by ECDSAPrivToPub
   signal chunkedPubkey[2][k];
   signal pubkeyBits[512];
   signal address;
 
-  // pubkey = ECDSAPrivToPub(privkey)
-  component privToPub = ECDSAPrivToPub(n, k);
+  // priv to address
+  component privToAddress = ECDSAPrivToAddress(n, k);
   for (var i = 0; i < k; i++) {
-    privToPub.privkey[i] <== privkey[i];
+    privToAddress.privkey[i] <== privkey[i];
   }
-  for (var i = 0; i < k; i++) {
-    chunkedPubkey[0][i] <== privToPub.pubkey[0][i];
-    chunkedPubkey[1][i] <== privToPub.pubkey[1][i];
-  }
+  address <== privToAddress.address;
 
-  // address = keccak(flatten(pubkey))
-  component flattenPubkey = FlattenPubkey(n, k);
-  for (var i = 0; i < k; i++) {
-    flattenPubkey.chunkedPubkey[0][i] <== chunkedPubkey[0][i];
-    flattenPubkey.chunkedPubkey[1][i] <== chunkedPubkey[1][i];
-  }
-  for (var i = 0; i < 512; i++) {
-    pubkeyBits[i] <== flattenPubkey.pubkeyBits[i];
-  }
-  component pubkeyToAddress = PubkeyToAddress();
-  for (var i = 0; i < 512; i++) {
-    pubkeyToAddress.pubkeyBits[i] <== pubkeyBits[i];
-  }
-  address <== pubkeyToAddress.address;
-
-  // merkle verify
+  // merkle verify of address
   component treeChecker = MerkleTreeChecker(levels);
   treeChecker.leaf <== address;
   treeChecker.root <== merkleRoot;

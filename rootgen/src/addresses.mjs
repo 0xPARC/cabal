@@ -15,7 +15,7 @@ async function getDevconAddresses(dataDir) {
     await getAddresses(`${dataDir}/Devcon2 by Piper Merriam.csv`)
   );
 
-  return [...new Set(allAddresses)].map(Number).map(BigInt);
+  return [...new Set(allAddresses)].map(BigInt);
 }
 
 async function getYearToAddresses(dataDir) {

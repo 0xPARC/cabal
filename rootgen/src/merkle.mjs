@@ -6,14 +6,16 @@ const F = poseidon.F; // poseidon finite field
 // NOTE: picked this as the null field element because it's known to not be in the tree
 const NULL_NODE = 1;
 
-// TODO: before prod, make sure to remove this one!
+// TODO: before prod, make sure to remove this!
 const TESTER_ADDRS = [
   '0xDE3002E0e11300d44e96929576F71958f5DDc859' // address in sample_input.json
-].map(Number).map(BigInt);
+].map(BigInt);
 
 // NOTE: taken from cabal-xyz
-async function buildTree(leaves) {
-  leaves = leaves.concat(TESTER_ADDRS);
+async function buildTree(leaves, testAddrs=true) {
+  if (testAddrs) {
+    leaves = leaves.concat(TESTER_ADDRS);
+  }
 
   leaves.sort();
 

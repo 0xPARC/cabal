@@ -12,7 +12,7 @@ circomFlags: "--r1cs --sym --wasm --wat"
 circuits:
   - template: "./circuits/verify_cabal.circom"
     component: "VerifyCabal"
-    params: [86, 3, 10]
+    params: [64, 4, 10]
     pubInputs: ["merkleRoot", "nullifier"]
     type: "prod"
 
