@@ -3,8 +3,8 @@
 import { groth16 } from 'snarkjs'
 import builder from './witness_calculator'
 
-const zkeyPath = "./VerifyCabal_86-3-10_prod.0.zkey"
-const wasmPath = "./VerifyCabal_86-3-10_prod.wasm"
+const zkeyPath = "./VerifyCabal_64-4-10_prod.0.zkey"
+const wasmPath = "./VerifyCabal_64-4-10_prod.wasm"
 
 export const generateProof = async (input) => {
     const zkeyResp = await fetch(zkeyPath);
@@ -23,7 +23,7 @@ export const generateProof = async (input) => {
 export const generateWitness = async (input) => {
     const wasmResp = await fetch(wasmPath);
     const wasmBuff = await wasmResp.arrayBuffer();
-  
+
   return new Promise((resolve, reject) => {
     builder(wasmBuff)
     .then(async witnessCalculator => {
@@ -34,4 +34,4 @@ export const generateWitness = async (input) => {
         reject(error);
     });
   });
-};  
+};
