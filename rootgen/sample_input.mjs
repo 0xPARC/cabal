@@ -36,7 +36,7 @@ const pathIndices = tree['leafToPathIndices'][BigInt(address)];
 
 writeFileSync('output/sample_input.json', JSON.stringify(
   {
-    "privkey": BigInt(privkey),
+    "privkey": pkTuple,
     "nullifier": nullifier,
     "merkleRoot": root,
     "merklePathElements": pathElements,
