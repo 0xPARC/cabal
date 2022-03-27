@@ -1,20 +1,19 @@
-const path = require("path");
+import path from 'path';
 
-const chai = require("chai");
-const circom_tester = require("circom_tester");
-
-const utils = require("./utils");
-
-const assert = chai.assert;
+import circom_tester from 'circom_tester';
 const wasm_tester = circom_tester.wasm;
 
-const buildPoseidon = require("circomlibjs").buildPoseidon;
+import { buildPoseidon } from 'circomlibjs';
 
+// NOTE: necessary for __dirname hack in es module
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 
 describe.only("verify cabal e2e", function () {
   this.timeout(1000 * 1000);
 
   it("handle sample_input.json", async () => {
+    const __dirname = dirname(fileURLToPath(import.meta.url));
     let circuit = await wasm_tester(path.join(__dirname, "circuits", "verify_cabal_64_4_10.circom"));
 
     // TODO: read from the relevant place
