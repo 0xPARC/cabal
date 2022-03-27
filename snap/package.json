@@ -4,10 +4,11 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "build:clean": "yarn clean && yarn build",
+    "build:clean": "yarn clean && yarn postinstall && yarn build",
     "build": "mm-snap build",
     "serve": "mm-snap serve",
-    "clean": "rimraf dist/*"
+    "clean": "rimraf dist/*",
+    "postinstall": "patch-package"
   },
   "devDependencies": {
     "@metamask/auto-changelog": "^2.5.0",
@@ -22,6 +23,7 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.4.0",
     "mkdirp": "^1.0.4",
+    "patch-package": "^6.4.7",
     "prettier": "^2.3.2",
     "rimraf": "^3.0.2"
   },
