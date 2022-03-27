@@ -8,7 +8,10 @@ const NULL_NODE = 1;
 
 // TODO: before prod, make sure to remove this!
 const TESTER_ADDRS = [
-  '0xDE3002E0e11300d44e96929576F71958f5DDc859' // address in sample_input.json
+  '0x4eaB0fA55a6c71c0c23BD0E67C06682b4Ce78A7f',
+  '0xda1EA97d4c6D723125B26E4a1441C399d0EA0bE4',
+  '0x05b9Df7825DE3c65A7D0386bD470F32a7008bC0c',
+  '0xb032BA0CbF94CfE9A377aD4060624cA31CEEdE43'
 ].map(BigInt);
 
 // NOTE: taken from cabal-xyz
