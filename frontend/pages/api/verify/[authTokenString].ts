@@ -17,6 +17,7 @@ export type Data = {
   guild: Guild
   role: Role
   user: User
+  merkleProofsByAddr: Record<string, string[]>
 }
 
 type Error = {
@@ -25,7 +26,7 @@ type Error = {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data | Error>
+  res: NextApiResponse<Data | Error | string>
 ) {
   let { authTokenString } = req.query
   if (typeof authTokenString == 'object') {
@@ -42,6 +43,23 @@ export default async function handler(
     return
   }
   // TODO check for authToken timeout here
+
+  // This is for POST (i.e. uploading proof for authToken)
+  if (req.method === 'POST') {
+    console.log(req.body) // This is JSON
+    const proof = await prisma.proof.create({
+      data: {
+        status: 'test_proof',
+        proof: JSON.stringify(req.body),
+        authTokenString: authTokenString,
+      },
+    })
+    // TODO verify proof
+    res.status(200).send('ok')
+    return
+  }
+
+  // This is for GET
   const configuredConnection = authToken.configuredConnection
   const guild = await prisma.guild.findUnique({
     where: { guildId: configuredConnection.guildId },
@@ -58,5 +76,11 @@ export default async function handler(
     role: role,
     guild: guild,
     user: authToken.user,
+    merkleProofsByAddr: {
+      '0x3Af621b0a91F667B38A652Aff8B5d5c9855dD737': [
+        '0x35f3d53b4fe1cbE59810687BB2b0795778d8605F',
+        '0x123d53b4fe1cbE59810687BB2b0795778d8605F',
+      ],
+    },
   })
 }
