@@ -126,9 +126,9 @@ export default function Home() {
           )}
         </header>
         <h1 className="text-6xl font-bold">
-          Coming Soon{' '}
+          Coming soon{' '}
           <a className="text-blue-600" href="https://cabal.xyz">
-            cabal.xyz
+            cabal.xyz 👻
           </a>
         </h1>
 
