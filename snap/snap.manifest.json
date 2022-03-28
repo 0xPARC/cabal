@@ -3,7 +3,7 @@
   "description": "Cabal Snap",
   "proposedName": "cabal-snap",
   "source": {
-    "shasum": "QlV2u9pOozQ1mtKKii7bUSHcnYWhy5E8+QB5nXR4ODo=",
+    "shasum": "HAqCq3PcfQDTCBwGk/k8bVmjXgD4n6627Yjy8NN8c+s=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
