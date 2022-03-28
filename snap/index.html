@@ -49,7 +49,7 @@
       console.log(result);
     }
 
-    // here we call the snap's "hello" method
+    // here we call the snap's "generateProof" method
     async function send () {
       try {
           console.log('trying');
@@ -59,6 +59,9 @@
             method: 'generateProof'
           }]
         })
+
+        console.log('receieved response:');
+        console.log(response);
       } catch (err) {
         console.error(err)
         alert('Problem happened: ' + err.message || err)
