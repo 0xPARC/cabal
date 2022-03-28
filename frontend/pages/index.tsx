@@ -57,23 +57,27 @@ export default function Home() {
   }
 
   async function setup(){
-    const { signer, provider, network } = await setupWeb3()
-    setNetwork(network)
-    
-    await setupProfileInfo(signer, provider)
-    setMetamaskConnected(true)
+    // TODO: figure out how to check whether snap is installed
+    if (!address) {
+      const { signer, provider, network } = await setupWeb3()
+      setNetwork(network)
+
+      await setupProfileInfo(signer, provider)
+    }
+
     await setupSnap()
     setMetamaskConnected(true)
   }
 
   // Get permissions to interact with and install the snap
   async function setupSnap(){
-    await window.ethereum.request({
+    const response = await window.ethereum.request({
       method: 'wallet_enable',
       params: [{
         wallet_snap: { [snapId]: {} },
       }]
     })
+    console.log(response);
   }
 
   async function generateProof(){
@@ -133,7 +137,7 @@ export default function Home() {
         </h1>
 
         <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
-          {!address ? (
+          {!metamaskConnected ? (
             <button
               className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
               onClick={metamaskInstalled ? setup : () => {}}
