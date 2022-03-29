@@ -1,1 +1,6 @@
 zkeys/*
+
+proof.json
+public.json
+*.wtns
+verification_key.json
