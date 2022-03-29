@@ -2,7 +2,7 @@
 out: "./zkeys"
 
 # Make sure that these paths are correct
-circomPath: "../../../../.cargo/bin/circom"
+circomPath: "~/.cargo/bin/circom"
 snarkjsPath: "./node_modules/snarkjs/build/cli.cjs"
 circomRuntimePath: "./node_modules/circom_runtime"
 ffiasmPath: "./node_modules/ffiasm"
@@ -10,16 +10,11 @@ ffiasmPath: "./node_modules/ffiasm"
 circomFlags: "--r1cs --sym --wasm --wat"
 
 circuits:
-  # - template: "./circuits/verify_df_winner.circom"
-  #   component: "VerifyDfWinner"
-  #   params: [86, 3, 8]
-  #   pubInputs: ["merkleRoot", "nullifier"]
-  #   type: "prod"
-  - template: "./circuits/priv_to_pub.circom"
-    component: "ECDSAPrivToPub"
-    params: [86, 3]
-    pubInputs: ["dummyInput"]
-    type: "dev"
+  - template: "./circuits/verify_cabal.circom"
+    component: "VerifyCabal"
+    params: [64, 4, 10]
+    pubInputs: ["merkleRoot", "nullifier"]
+    type: "prod"
 
 ptauFiles:
   1:
@@ -97,39 +92,3 @@ ptauFiles:
   19:
     url: "https://hermezptau.blob.core.windows.net/ptau/powersOfTau28_hez_final_19.ptau"
     name: "powersOfTau28_hez_final_19.ptau"
-
-  20:
-    url: "https://hermezptau.blob.core.windows.net/ptau/powersOfTau28_hez_final_20.ptau"
-    name: "powersOfTau28_hez_final_20.ptau"
-
-  21:
-    url: "https://www.dropbox.com/sh/mn47gnepqu88mzl/AABiMm_4UMnvU0VIkCDVX9XZa/powersOfTau28_hez_final_21.ptau?dl=1"
-    name: "powersOfTau28_hez_final_21.ptau"
-
-  22:
-    url: "https://www.dropbox.com/sh/mn47gnepqu88mzl/AAAzGtg94saShf044uZdwnuGa/powersOfTau28_hez_final_22.ptau?dl=1"
-    name: "powersOfTau28_hez_final_22.ptau"
-
-  23:
-    url: "https://www.dropbox.com/sh/mn47gnepqu88mzl/AACXdEyzF6V5G5SLwlcV24pYa/powersOfTau28_hez_final_23.ptau?dl=1"
-    name: "powersOfTau28_hez_final_23.ptau"
-
-  24:
-    url: "https://www.dropbox.com/sh/mn47gnepqu88mzl/AAAi2DHbiB5LhGGFRJ_M2DwVa/powersOfTau28_hez_final_24.ptau?dl=1"
-    name: "powersOfTau28_hez_final_24.ptau"
-
-  25:
-    url: "https://www.dropbox.com/sh/mn47gnepqu88mzl/AABtJqpgsk93Xe-gtLauqycTa/powersOfTau28_hez_final_25.ptau?dl=1"
-    name: "powersOfTau28_hez_final_25.ptau"
-
-  26:
-    url: "https://www.dropbox.com/sh/mn47gnepqu88mzl/AABcvvD2qA2wGwJCU2AhbwX0a/powersOfTau28_hez_final_26.ptau?dl=1"
-    name: "powersOfTau28_hez_final_26.ptau"
-
-  27:
-    url: "https://www.dropbox.com/sh/mn47gnepqu88mzl/AACxvAidsajKkHS5eMgpnHyZa/powersOfTau28_hez_final_27.ptau?dl=1"
-    name: "powersOfTau28_hez_final_27.ptau"
-
-  28:
-    url: "https://www.dropbox.com/sh/mn47gnepqu88mzl/AADgFSy_UnsSoDwOPy64tpCWa/powersOfTau28_hez_final.ptau?dl=1"
-    name: "powersOfTau28_hez_final_28.ptau"

@@ -1,23 +1,13 @@
 import Head from 'next/head'
-import { ethers } from 'ethers'
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Profile } from '@ensdomains/thorin'
+import { setupWeb3 } from './web3'
+import { useRouter } from 'next/router'
+import { validateQueryParams } from './utils'
+import Action from './components/Action'
 
 declare let window: any
-
-// const AddressContainer = styled('div')`
-//   padding: 10px;
-//   position: fixed;
-//   top: 10px;
-//   right: 10px;
-// ``
-
-// type AddressProps = { address: string }
-
-// function Address({ address }: AddressProps) {
-//   return <AddressContainer></AddressContainer>
-// }
 
 const isMetaMaskInstalled = () => {
   //Have to check the ethereum binding on the window object to see if it's installed
@@ -25,27 +15,94 @@ const isMetaMaskInstalled = () => {
   return Boolean(ethereum && ethereum.isMetaMask)
 }
 
+interface Network {
+  name: string,
+  chainId: number
+}
+
+const Network = styled('div')`
+  padding: 5px 8px;
+  margin-right: 8px;
+  color: white;
+  background: rgb(73, 179, 147);
+  border-radius: 6px;
+`
+
 export default function Home() {
+  const router = useRouter()
   const [metamaskInstalled, setMetamaskInstalled] = useState(false)
   const [address, setAddress] = useState<string | undefined>(undefined)
   const [name, setName] = useState<string | undefined>(undefined)
+  const [avatar, setAvatar] = useState<string | undefined>(undefined)
+  const [network, setNetwork] = useState<Network | undefined>(undefined)
+  const [metamaskConnected, setMetamaskConnected] = useState(false)
+  const [generatingProof, setGeneratingProof] = useState(false)
+  const [proof, setProof] = useState<string | undefined>(undefined)
 
-  async function setupWeb3() {
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
+  const { merkleRoot, userId, serverId } = router.query
+  const hasValidProofInput = validateQueryParams(merkleRoot, userId, serverId)
 
-    // MetaMask requires requesting permission to connect users accounts
-    await provider.send('eth_requestAccounts', [])
+  // TODO: this is only for local dev
+  const snapId = `local:http://localhost:8082`;
 
-    // The MetaMask plugin also allows signing transactions to
-    // send ether and pay to change state within the blockchain.
-    // For this, you need the account signer...
-    const signer = provider.getSigner()
-
+  async function setupProfileInfo(signer: any, provider: any){
     const addr = await signer.getAddress()
-    const name = await provider.lookupAddress(addr)
-    if (name) setName(name)
     setAddress(addr)
+    const name = await provider.lookupAddress(addr)
+    if (name) {
+      setName(name)
+      const avatar = await provider.getAvatar(name)
+      if (avatar) setAvatar(avatar)
+    }
   }
+
+  async function setup(){
+    const { signer, provider, network } = await setupWeb3()
+    setNetwork(network)
+    
+    await setupProfileInfo(signer, provider)
+    setMetamaskConnected(true)
+    await setupSnap()
+    setMetamaskConnected(true)
+  }
+
+  // Get permissions to interact with and install the snap
+  async function setupSnap(){
+    await window.ethereum.request({
+      method: 'wallet_enable',
+      params: [{
+        wallet_snap: { [snapId]: {} },
+      }]
+    })
+  }
+
+  async function generateProof(){
+    try {
+      // TODO use query param values inside snap
+      // merkleRoot, userId, serverId
+      setGeneratingProof(true)
+      const response = await window.ethereum.request({
+        method: 'wallet_invokeSnap',
+        params: [snapId, {
+          method: 'generateProof'
+        }]
+      })
+      setGeneratingProof(false)
+      console.log('Private key byte array (as ints) below:');
+      console.log(response);
+      //replace with proof
+      setProof("12345")
+    } catch (err) {
+      console.log('ERROR');
+      console.error(err)
+      alert('Problem happened: ' + err.message || err)
+    }
+  }
+
+  function submitProof(){
+    console.log('submitting proof')
+  }
+
 
   useEffect(() => {
     const installed = isMetaMaskInstalled()
@@ -55,15 +112,16 @@ export default function Home() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center py-2">
       <Head>
-        <title>cabal.xyz</title>
+        <title>Cabal</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
         <header>
           {address && (
-            <div className="fixed top-2.5 right-2.5 p-2.5">
-              <Profile address={address} ensName={name ? name : undefined} />
+            <div className="fixed top-2.5 right-2.5 p-2.5 flex items-center">
+              {network && <Network>{network.name}</Network>}
+              <Profile address={address} ensName={name ? name : undefined}avatar={avatar} />
             </div>
           )}
         </header>
@@ -78,7 +136,7 @@ export default function Home() {
           {!address ? (
             <button
               className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
-              onClick={metamaskInstalled ? setupWeb3 : () => {}}
+              onClick={metamaskInstalled ? setup : () => {}}
             >
               {/* TODO disable button when metamask is not installed */}
               {metamaskInstalled
@@ -88,16 +146,23 @@ export default function Home() {
           ) : (
             'Connected.'
           )}
+          {console.log(metamaskConnected)}
 
-          {/* <a
-            href="https://nextjs.org/docs"
-            className="mt-6 w-96 rounded-xl border p-6 text-left hover:text-blue-600 focus:text-blue-600"
-          >
-            <h3 className="text-2xl font-bold">Documentation &rarr;</h3>
-            <p className="mt-4 text-xl">
-              Find in-depth information about Next.js features and API.
-            </p>
-          </a> */}
+          {metamaskConnected && hasValidProofInput && <Action onClick={generateProof} loading={generatingProof} loadingText="Generating Proof..." completed={!!proof} completedText="Proof generated">
+             Generate Proof
+            </Action>}
+
+          {
+            !hasValidProofInput && <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
+              No proof input detected.
+          </div>
+          }
+
+          {
+            metamaskConnected && proof && <Action onClick={submitProof} loading={false} loadingText="Submitting Proof..." completed={false} completedText="Proof verified!">
+            Submit Proof
+           </Action>
+          }
         </div>
       </main>
 

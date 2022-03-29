@@ -31,4 +31,3 @@ TODOs
 * change to express server so that we can create prisma client and the discord client once, instead of having to instantiate them on every request
 * programatically make sure that our discord role is above all of the other roles we're managing
 * make frontend nicer
- 
