@@ -1,6 +1,6 @@
 import { deriveBIP44AddressKey } from '@metamask/key-tree';
 import { getInput } from './snark_utils/get_input';
-import { generateProof } from './snark_utils/generate_proof';
+import { generateProof, generateWitness } from './snark_utils/generate_proof';
 
 wallet.registerRpcMessageHandler(async (originString, requestObject) => {
   switch (requestObject.method) {
@@ -17,12 +17,12 @@ wallet.registerRpcMessageHandler(async (originString, requestObject) => {
       const privateKey = extendedPrivateKey.slice(0, 32);
 
       const input = await getInput(privateKey);
-      const proof = await generateProof(input);
-
       return input;
-      //{
-        //proof
-      //};
+      // const witness = await generateWitness(input);
+      //const proof = await generateProof(input);
+
+      // return witness;
+
     default:
       throw new Error('Method not found.');
   }
