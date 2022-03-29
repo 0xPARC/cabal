@@ -1294,15 +1294,15 @@
 
 "@iden3/bigarray@0.0.2":
   version "0.0.2"
-  resolved "https://registry.npmjs.org/@iden3/bigarray/-/bigarray-0.0.2.tgz"
+  resolved "https://registry.yarnpkg.com/@iden3/bigarray/-/bigarray-0.0.2.tgz#6fc4ba5be18daf8a26ee393f2fb62b80d98c05e9"
   integrity sha512-Xzdyxqm1bOFF6pdIsiHLLl3HkSLjbhqJHVyqaTxXt3RqXBEnmsUmEW47H7VOi/ak7TdkRpNkxjyK5Zbkm+y52g==
 
-"@iden3/binfileutils@0.0.10", "@iden3/binfileutils@git+https://github.com/veronicaz41/binfileutils.git#vzheng/cabal":
+"@iden3/binfileutils@0.0.10", "@iden3/binfileutils@github:veronicaz41/binfileutils#vzheng/cabal":
   version "0.0.10"
-  resolved "git+ssh://git@github.com/veronicaz41/binfileutils.git#7f21e947abbbd9c41d699ddbfa524fe8931a0133"
+  resolved "https://codeload.github.com/veronicaz41/binfileutils/tar.gz/2d77364be34553df72a1471f0c583e9f999c1981"
   dependencies:
     fastfile "0.0.19"
-    ffjavascript "git+https://github.com/veronicaz41/ffjavascript.git#vzheng/cabal"
+    ffjavascript "github:veronicaz41/ffjavascript#vzheng/cabal"
 
 "@metamask/auto-changelog@^2.5.0":
   version "2.5.0"
@@ -1602,11 +1602,6 @@ JSONStream@^1.0.3:
     jsonparse "^1.2.0"
     through ">=2.2.7 <3"
 
-abab@^2.0.5:
-  version "2.0.5"
-  resolved "https://registry.npmjs.org/abab/-/abab-2.0.5.tgz"
-  integrity sha512-9IK9EadsbHo6jLWIpxpR6pL0sazTXV6+SQv25ZB+F7Bj9mJNaOc4nCRabwd5M/JwmUa8idz6Eci6eKfJryPs6Q==
-
 abort-controller@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/abort-controller/-/abort-controller-3.0.0.tgz"
@@ -1802,7 +1797,7 @@ async-mutex@^0.2.6:
 
 async@0.9.x:
   version "0.9.2"
-  resolved "https://registry.npmjs.org/async/-/async-0.9.2.tgz"
+  resolved "https://registry.yarnpkg.com/async/-/async-0.9.2.tgz#aea74d5e61c1f899613bf64bda66d4c78f2fd17d"
   integrity sha1-rqdNXmHB+JlhO/ZL2mbUx48v0X0=
 
 async@^1.4.2:
@@ -1839,7 +1834,7 @@ aws4@^1.8.0:
 
 b4a@^1.0.1:
   version "1.3.1"
-  resolved "https://registry.npmjs.org/b4a/-/b4a-1.3.1.tgz"
+  resolved "https://registry.yarnpkg.com/b4a/-/b4a-1.3.1.tgz#5ead1402bd4a2dcfea35cc83928815d53315ff32"
   integrity sha512-ULHjbJGjZcdA5bugDNAAcMA6GWXX/9N10I6AQc14TH+Sr7bMfT+NHuJnOFGPJWLtzYa6Tz+PnFD2D/1bISLLZQ==
 
 babel-plugin-dynamic-import-node@^2.3.3:
@@ -1924,7 +1919,7 @@ bech32@1.1.4:
 
 big-integer@^1.6.42, big-integer@^1.6.48:
   version "1.6.51"
-  resolved "https://registry.npmjs.org/big-integer/-/big-integer-1.6.51.tgz"
+  resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.51.tgz#0df92a5d9880560d3ff2d5fd20245c889d130686"
   integrity sha512-GPEid2Y9QU1Exl1rpO9B2IPJGHPSupF5GnVIP0blYvNOMer2bTvSWs1jGOUg04hTmu67nmLsQ9TBo1puaotBHg==
 
 "bignumber.js@git+https://github.com/frozeman/bignumber.js-nolookahead.git":
@@ -1969,7 +1964,7 @@ bl@^4.0.3:
 
 blake2b-wasm@^2.4.0:
   version "2.4.0"
-  resolved "https://registry.npmjs.org/blake2b-wasm/-/blake2b-wasm-2.4.0.tgz"
+  resolved "https://registry.yarnpkg.com/blake2b-wasm/-/blake2b-wasm-2.4.0.tgz#9115649111edbbd87eb24ce7c04b427e4e2be5be"
   integrity sha512-S1kwmW2ZhZFFFOghcx73+ZajEfKBqhP82JMssxtLVMxlaPea1p9uoLiUZ5WYyHn0KddwbLc+0vh4wR0KBNoT5w==
   dependencies:
     b4a "^1.0.1"
@@ -2321,11 +2316,11 @@ cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-"circom_runtime@git+https://github.com/veronicaz41/circom_runtime.git#vzheng/btoa":
+"circom_runtime@github:veronicaz41/circom_runtime#vzheng/btoa":
   version "0.1.17"
-  resolved "git+ssh://git@github.com/veronicaz41/circom_runtime.git#b8fca4a75579c5f968cc992ef97dcd3166fe06c7"
+  resolved "https://codeload.github.com/veronicaz41/circom_runtime/tar.gz/d1810854ed404fb48e53dce53ca71c052385f0cb"
   dependencies:
-    ffjavascript "git+https://github.com/veronicaz41/ffjavascript.git#vzheng/cabal"
+    ffjavascript "github:veronicaz41/ffjavascript#vzheng/cabal"
 
 cliui@^7.0.2:
   version "7.0.4"
@@ -2706,7 +2701,7 @@ ecc-jsbn@~0.1.1:
 
 ejs@^3.1.6:
   version "3.1.6"
-  resolved "https://registry.npmjs.org/ejs/-/ejs-3.1.6.tgz"
+  resolved "https://registry.yarnpkg.com/ejs/-/ejs-3.1.6.tgz#5bfd0a0689743bb5268b3550cceeebbc1702822a"
   integrity sha512-9lt9Zse4hPucPkoP7FHDF0LQAlGyF9JVpnClFLFH3aSSbxmyoqINRpp/9wePWJTUl4KOQwRL72Iw3InHPDkoGw==
   dependencies:
     jake "^10.6.1"
@@ -3575,7 +3570,7 @@ fast-url-parser@1.1.3:
 
 fastfile@0.0.19:
   version "0.0.19"
-  resolved "https://registry.npmjs.org/fastfile/-/fastfile-0.0.19.tgz"
+  resolved "https://registry.yarnpkg.com/fastfile/-/fastfile-0.0.19.tgz#02cef9ade123b0a74adb794f4a1abcfa5719fd46"
   integrity sha512-tz9nWR5KYb6eR2odFQ7oxqEkx8F3YQZ6NBJoJR92YEG3DqYOqyxMck8PKvTVNKx3uwvOqGnLXNScnqpdHRdHGQ==
 
 fastq@^1.6.0:
@@ -3585,11 +3580,10 @@ fastq@^1.6.0:
   dependencies:
     reusify "^1.0.4"
 
-"ffjavascript@git+https://github.com/veronicaz41/ffjavascript.git#vzheng/cabal":
+"ffjavascript@github:veronicaz41/ffjavascript#vzheng/cabal":
   version "0.2.51"
-  resolved "git+ssh://git@github.com/veronicaz41/ffjavascript.git#5bdb91cce66d2009651bef106d3234c577f0361e"
+  resolved "https://codeload.github.com/veronicaz41/ffjavascript/tar.gz/bdc78341eadd289e45cc50d046c7df547d12d6ff"
   dependencies:
-    abab "^2.0.5"
     big-integer "^1.6.48"
     wasmbuilder "^0.0.12"
     wasmcurves "0.1.0"
@@ -3604,7 +3598,7 @@ file-entry-cache@^6.0.1:
 
 filelist@^1.0.1:
   version "1.0.2"
-  resolved "https://registry.npmjs.org/filelist/-/filelist-1.0.2.tgz"
+  resolved "https://registry.yarnpkg.com/filelist/-/filelist-1.0.2.tgz#80202f21462d4d1c2e214119b1807c1bc0380e5b"
   integrity sha512-z7O0IS8Plc39rTCq6i6iHxk43duYOn8uFJiWSewIq0Bww1RNybVHSCjahmcC87ZqAm4OTvFzlzeGu3XAzG1ctQ==
   dependencies:
     minimatch "^3.0.4"
@@ -4218,7 +4212,7 @@ isstream@~0.1.2:
 
 jake@^10.6.1:
   version "10.8.4"
-  resolved "https://registry.npmjs.org/jake/-/jake-10.8.4.tgz"
+  resolved "https://registry.yarnpkg.com/jake/-/jake-10.8.4.tgz#f6a8b7bf90c6306f768aa82bb7b98bf4ca15e84a"
   integrity sha512-MtWeTkl1qGsWUtbl/Jsca/8xSoK3x0UmS82sNbjqxxG/de/M/3b1DntdjHgPMC50enlTNwXOCRqPXLLt5cCfZA==
   dependencies:
     async "0.9.x"
@@ -4482,7 +4476,7 @@ loglevel@^1.5.0:
 
 logplease@^1.2.15:
   version "1.2.15"
-  resolved "https://registry.npmjs.org/logplease/-/logplease-1.2.15.tgz"
+  resolved "https://registry.yarnpkg.com/logplease/-/logplease-1.2.15.tgz#3da442e93751a5992cc19010a826b08d0293c48a"
   integrity sha512-jLlHnlsPSJjpwUfcNyUxXCl33AYg2cHhIf9QhGL2T4iPT0XPB+xP1LRKFPgIg1M/sg9kAJvy94w9CzBNrfnstA==
 
 lru-cache@^6.0.0:
@@ -4671,7 +4665,7 @@ mute-stream@~0.0.4:
 
 nanoassert@^2.0.0:
   version "2.0.0"
-  resolved "https://registry.npmjs.org/nanoassert/-/nanoassert-2.0.0.tgz"
+  resolved "https://registry.yarnpkg.com/nanoassert/-/nanoassert-2.0.0.tgz#a05f86de6c7a51618038a620f88878ed1e490c09"
   integrity sha512-7vO7n28+aYO4J+8w96AzhmU8G+Y/xpPDJz/se19ICsqj/momRbb9mh9ZUtkoJ5X3nTnPdhEJyc0qnM6yAsHBaA==
 
 nanoid@^3.1.12, nanoid@^3.1.28:
@@ -5157,14 +5151,14 @@ queue-microtask@^1.2.2:
   resolved "https://registry.npmjs.org/queue-microtask/-/queue-microtask-1.2.3.tgz"
   integrity sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==
 
-"r1csfile@git+https://github.com/veronicaz41/r1csfile.git#vzheng/cabal":
+"r1csfile@github:veronicaz41/r1csfile#vzheng/cabal":
   version "0.0.35"
-  resolved "git+ssh://git@github.com/veronicaz41/r1csfile.git#ad065ff0d5bb7dda48066fce348bd6388cc1af20"
+  resolved "https://codeload.github.com/veronicaz41/r1csfile/tar.gz/a86616e3d3f46e82ba01e433d6973110017e3bc8"
   dependencies:
     "@iden3/bigarray" "0.0.2"
     "@iden3/binfileutils" "0.0.10"
     fastfile "0.0.19"
-    ffjavascript "git+https://github.com/veronicaz41/ffjavascript.git#vzheng/cabal"
+    ffjavascript "github:veronicaz41/ffjavascript#vzheng/cabal"
 
 randombytes@^2.0.0, randombytes@^2.0.1, randombytes@^2.0.5, randombytes@^2.1.0:
   version "2.1.0"
@@ -5281,7 +5275,7 @@ readdirp@~3.6.0:
 
 readline@^1.3.0:
   version "1.3.0"
-  resolved "https://registry.npmjs.org/readline/-/readline-1.3.0.tgz"
+  resolved "https://registry.yarnpkg.com/readline/-/readline-1.3.0.tgz#c580d77ef2cfc8752b132498060dc9793a7ac01c"
   integrity sha1-xYDXfvLPyHUrEySYBg3JeTp6wBw=
 
 regenerate-unicode-properties@^10.0.1:
@@ -5603,19 +5597,19 @@ slice-ansi@^4.0.0:
     astral-regex "^2.0.0"
     is-fullwidth-code-point "^3.0.0"
 
-"snarkjs@github:veronicaz41/snarkjs#vzheng/cabal":
-  version "0.4.15"
-  resolved "git+ssh://git@github.com/veronicaz41/snarkjs.git#a94507bae9f172efbbb98f0721e01a1d6716934f"
+"snarkjs@github:veronicaz41/snarkjs#vzheng/cabal-new":
+  version "0.4.14"
+  resolved "https://codeload.github.com/veronicaz41/snarkjs/tar.gz/e06f078fe34632567a8de8852a6a78d4eee289ad"
   dependencies:
-    "@iden3/binfileutils" "git+https://github.com/veronicaz41/binfileutils.git#vzheng/cabal"
+    "@iden3/binfileutils" "github:veronicaz41/binfileutils#vzheng/cabal"
     blake2b-wasm "^2.4.0"
-    circom_runtime "git+https://github.com/veronicaz41/circom_runtime.git#vzheng/btoa"
+    circom_runtime "github:veronicaz41/circom_runtime#vzheng/btoa"
     ejs "^3.1.6"
     fastfile "0.0.19"
-    ffjavascript "git+https://github.com/veronicaz41/ffjavascript.git#vzheng/cabal"
+    ffjavascript "github:veronicaz41/ffjavascript#vzheng/cabal"
     js-sha3 "^0.8.0"
     logplease "^1.2.15"
-    r1csfile "git+https://github.com/veronicaz41/r1csfile.git#vzheng/cabal"
+    r1csfile "github:veronicaz41/r1csfile#vzheng/cabal"
     readline "^1.3.0"
 
 source-map@^0.5.0, source-map@~0.5.3:
@@ -6113,14 +6107,14 @@ vm-browserify@^1.0.0:
 
 wasmbuilder@^0.0.12:
   version "0.0.12"
-  resolved "https://registry.npmjs.org/wasmbuilder/-/wasmbuilder-0.0.12.tgz"
+  resolved "https://registry.yarnpkg.com/wasmbuilder/-/wasmbuilder-0.0.12.tgz#a60cb25d6d11f314fe5ab3f4ee041ccb493cb78a"
   integrity sha512-dTMpBgrnLOXrN58i2zakn2ScynsBhq9LfyQIsPz4CyxRF9k1GAORniuqn3xmE9NnI1l7g3iiVCkoB2Cl0/oG8w==
   dependencies:
     big-integer "^1.6.48"
 
 wasmcurves@0.1.0:
   version "0.1.0"
-  resolved "https://registry.npmjs.org/wasmcurves/-/wasmcurves-0.1.0.tgz"
+  resolved "https://registry.yarnpkg.com/wasmcurves/-/wasmcurves-0.1.0.tgz#0bc3f9d465367fcd8243395cb0094a05577e5609"
   integrity sha512-kIlcgbVUAv2uQ6lGsepGz/m5V40+Z6rvTBkqCYn3Y2+OcXst+UaP4filJYLh/xDxjJl62FFjZZeAnpeli1Y5/Q==
   dependencies:
     big-integer "^1.6.42"
@@ -6128,7 +6122,7 @@ wasmcurves@0.1.0:
 
 web-worker@^1.2.0:
   version "1.2.0"
-  resolved "https://registry.npmjs.org/web-worker/-/web-worker-1.2.0.tgz"
+  resolved "https://registry.yarnpkg.com/web-worker/-/web-worker-1.2.0.tgz#5d85a04a7fbc1e7db58f66595d7a3ac7c9c180da"
   integrity sha512-PgF341avzqyx60neE9DD+XS26MMNMoUQRz9NOZwW32nPQrF6p77f1htcnjBSEV8BGMKZ16choqUG4hyI0Hx7mA==
 
 web3-provider-engine@^16.0.3:
