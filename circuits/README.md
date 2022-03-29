@@ -25,6 +25,8 @@ npx zkey-manager compile -c ./zkeys.config.yml
 npx zkey-manager downloadPtau -c ./zkeys.config.yml
 npx zkey-manager genZkeys -c ./zkeys.config.yml
 
-cp zkeys/VerifyCabal_64-4-10_prod.0.zkey ../snap/src/snark_utils/
-cp zkeys/VerifyCabal_64-4-10_prod_js/VerifyCabal_64-4-10_prod.wasm ../snap/src/snark_utils/
+<!-- cp zkeys/VerifyCabal_64-4-10_prod.0.zkey ../snap/src/snark_utils/
+cp zkeys/VerifyCabal_64-4-10_prod_js/VerifyCabal_64-4-10_prod.wasm ../snap/src/snark_utils/ -->
+
+node prepare_zkey.js
 ```
