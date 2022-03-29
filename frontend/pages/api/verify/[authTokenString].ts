@@ -21,10 +21,9 @@ import {
 import 'dotenv/config'
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] })
-console.log(process.env.DISCORD_TOKEN)
 client.login(process.env.DISCORD_TOKEN)
 const prisma = new PrismaClient()
- 
+
 let clientReady = false
 client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}!`)
