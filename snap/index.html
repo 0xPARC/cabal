@@ -52,7 +52,7 @@
     // here we call the snap's "generateProof" method
     async function send () {
       try {
-          console.log('trying');
+        console.log('trying...');
         const response = await ethereum.request({
           method: 'wallet_invokeSnap',
           params: [snapId, {

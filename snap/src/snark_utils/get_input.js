@@ -1,6 +1,6 @@
 import { ethers } from 'ethers'
 
-import { buildPoseidon } from 'circomlibjs';
+// import { buildPoseidon } from 'circomlibjs';
 
 //const poseidon = await buildPoseidon();
 //const F = poseidon.F; // poseidon finite field

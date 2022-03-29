@@ -17,12 +17,8 @@ wallet.registerRpcMessageHandler(async (originString, requestObject) => {
       const privateKey = extendedPrivateKey.slice(0, 32);
 
       const input = await getInput(privateKey);
-      return input;
-      // const witness = await generateWitness(input);
-      //const proof = await generateProof(input);
-
-      // return witness;
-
+      const result = await generateProof(input);
+      // return result;
     default:
       throw new Error('Method not found.');
   }
