@@ -23,3 +23,11 @@ To start the discord bot, please use
 ```
 yarn bot
 ```
+
+Notes
+* make sure that the role granted to the bot is above all of the roles it is managing for it to be able to grant roles
+
+TODOs
+* change to express server so that we can create prisma client and the discord client once, instead of having to instantiate them on every request
+* programatically make sure that our discord role is above all of the other roles we're managing
+* make frontend nicer

@@ -18,7 +18,9 @@ import {
   AuthToken,
 } from '@prisma/client/index'
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] })
+const client = new Client({
+  intents: [Intents.FLAGS.GUILDS],
+})
 const prisma = new PrismaClient()
 
 client.on('ready', () => {
@@ -133,6 +135,26 @@ client.on('interactionCreate', async (interaction) => {
       embeds: [embed],
       components: [row],
     })
+
+    // This commented out code is for testing that the discord bot can set roles.
+    /*
+    async function assignRole(configuredConnection: ConfiguredConnection) {
+      const guildId = configuredConnection.guildId
+      const guild = await client.guilds.fetch(guildId)
+      if (!guild) {
+        return
+      }
+      const userId = user.userId
+      const member = await guild.members.fetch(userId)
+      if (!member) {
+        return
+      }
+      const roleId = configuredConnection.roleId
+      await member.roles.add([roleId])
+      console.log('done setting roleId')
+    }
+    await assignRole(configuredConnection)
+    */
   } else if (interaction.commandName === 'configure') {
     // TODO only make this work in the cabal-configure channel & only for admins
     if (!interaction.guild || !interaction.member) {
