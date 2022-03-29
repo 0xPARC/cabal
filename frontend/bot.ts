@@ -17,8 +17,11 @@ import {
   ConfiguredConnection,
   AuthToken,
 } from '@prisma/client/index'
+import { verify } from 'crypto'
 
-const client = new Client({ intents: [Intents.FLAGS.GUILDS] })
+const client = new Client({
+  intents: [Intents.FLAGS.GUILDS],
+})
 const prisma = new PrismaClient()
 
 client.on('ready', () => {
@@ -133,6 +136,25 @@ client.on('interactionCreate', async (interaction) => {
       embeds: [embed],
       components: [row],
     })
+
+    // ALL FOR TESTING PURPOSES WHEN USER TYPES VERIFY!!!
+    // async function assignRole(configuredConnection: ConfiguredConnection) {
+    //   const guildId = configuredConnection.guildId
+    //   const guild = await client.guilds.fetch(guildId)
+    //   if (!guild) {
+    //     return
+    //   }
+    //   const userId = user.userId
+    //   const member = await guild.members.fetch(userId)
+    //   if (!member) {
+    //     return
+    //   }
+    //   const roleId = configuredConnection.roleId
+    //   await member.roles.add([roleId])
+    //   console.log('done setting roleId')
+    // }
+    // await assignRole(configuredConnection)
+    //
   } else if (interaction.commandName === 'configure') {
     // TODO only make this work in the cabal-configure channel & only for admins
     if (!interaction.guild || !interaction.member) {

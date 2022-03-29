@@ -9,8 +9,27 @@ import {
   ConfiguredConnection,
   AuthToken,
 } from '@prisma/client/index'
+import {
+  MessageActionRow,
+  MessageButton,
+  MessageEmbed,
+  Client,
+  Intents,
+  Message,
+  IntegrationApplication,
+} from 'discord.js'
+import 'dotenv/config'
 
+const client = new Client({ intents: [Intents.FLAGS.GUILDS] })
+console.log(process.env.DISCORD_TOKEN)
+client.login(process.env.DISCORD_TOKEN)
 const prisma = new PrismaClient()
+ 
+let clientReady = false
+client.on('ready', () => {
+  console.log(`Logged in as ${client.user?.tag}!`)
+  clientReady = true
+})
 
 export type Data = {
   configuredConnection: ConfiguredConnection
@@ -54,8 +73,25 @@ export default async function handler(
         authTokenString: authTokenString,
       },
     })
-    // TODO verify proof
+    // TODO verify proof here
+    const proofVerified = true
+    if (proofVerified) {
+      // discord add role
+      const guildId = authToken.configuredConnection.guildId
+      const guild = await client.guilds.fetch(guildId)
+      if (!guild) {
+        return
+      }
+      const userId = authToken.user.userId
+      const member = await guild.members.fetch(userId)
+      if (!member) {
+        return
+      }
+      const roleId = authToken.configuredConnection.roleId
+      await member.roles.add([roleId])
+    }
     res.status(200).send('ok')
+
     return
   }
 
