@@ -6,7 +6,7 @@ import Head from 'next/head'
 import { Profile } from '@ensdomains/thorin'
 
 declare let window: any
-const snapId = `local:http://localhost:8082`
+const snapId = 'npm:cabal-xyz-snap'
 
 const AuthToken = () => {
   const router = useRouter()
