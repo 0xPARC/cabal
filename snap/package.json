@@ -1,8 +1,16 @@
 {
   "name": "cabal-snap",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.1",
+  "description": "Metamask snap fo cabal.xyz",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:0xPARC/cabal.git"
+  },
   "main": "src/index.js",
+  "files": [
+    "dist/",
+    "snap.manifest.json"
+  ],
   "scripts": {
     "build:clean": "yarn clean && yarn build",
     "build": "mm-snap build",
@@ -30,5 +38,12 @@
     "circomlibjs": "github:lsankar4033/circomlibjs#lsankar4033/cabal-new",
     "ethers": "5.6.2",
     "snarkjs": "github:veronicaz41/snarkjs#vzheng/cabal-new"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "engines": {
+    "node": ">=12.11.0"
   }
 }
