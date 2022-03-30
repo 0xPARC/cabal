@@ -3,7 +3,7 @@
   "description": "Cabal Snap",
   "proposedName": "cabal-snap",
   "source": {
-    "shasum": "ssJR+InavGb7F4LaanO+bX+1r6tFUJeIcwYxpkrdE6E=",
+    "shasum": "M+2nUfC2TR6GrT4bbQ+k1KjK+WMBGcuhKmmq8R6q4iI=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
@@ -16,6 +16,7 @@
     "snap_confirm": {},
     "snap_getBip44Entropy_60": {},
     "snap_manageState": {},
+    "endowment:network-access": {},
     "endowment:wasm": {}
   },
   "manifestVersion": "0.1"

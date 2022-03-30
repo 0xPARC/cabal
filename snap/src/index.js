@@ -1,10 +1,10 @@
 import { deriveBIP44AddressKey } from '@metamask/key-tree';
 import { getInput } from './snark_utils/get_input';
-import { generateProof } from './snark_utils/generate_proof';
+import { generateWitness, generateProof } from './snark_utils/generate_proof';
 
 wallet.registerRpcMessageHandler(async (originString, requestObject) => {
   switch (requestObject.method) {
-    case 'generateProof':
+    case 'generateWitness':
       const ethNode = await wallet.request({
         method: 'snap_getBip44Entropy_60',
       });
@@ -17,7 +17,15 @@ wallet.registerRpcMessageHandler(async (originString, requestObject) => {
       const privateKey = extendedPrivateKey.slice(0, 32);
 
       const input = await getInput(privateKey);
-      const proof = await generateProof(input);
+      witness = await generateWitness(input);
+      console.log("coming from index.js");
+      console.log(witness);
+
+      return {
+        witness
+      };
+    case 'generateProof':
+      const proof = await generateProof(witness);
 
       return {
         proof
