@@ -6,7 +6,8 @@
     "start": "next start",
     "bot": "ts-node bot.ts",
     "bot-prod": "forever -c ts-node bot.ts",
-    "bot-dev": "nodemon bot.ts"
+    "bot-dev": "nodemon bot.ts",
+    "bot-build": "tsc --project tsconfig.bot.json"
   },
   "dependencies": {
     "@ensdomains/thorin": "0.4.1",
