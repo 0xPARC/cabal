@@ -16,7 +16,8 @@
     "snap_confirm": {},
     "snap_getBip44Entropy_60": {},
     "snap_manageState": {},
-    "endowment:wasm": {}
+    "endowment:wasm": {},
+    "endowment:internet-access": {}
   },
   "manifestVersion": "0.1"
 }
