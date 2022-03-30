@@ -1,11 +1,12 @@
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
-import { Data } from '../api/verify/[authTokenString]'
+import { Data, MerkleProof } from '../api/verify/[authTokenString]'
 import Head from 'next/head'
 import { Profile } from '@ensdomains/thorin'
 
 declare let window: any
+const snapId = `local:http://localhost:8082`
 
 const AuthToken = () => {
   const router = useRouter()
@@ -14,7 +15,7 @@ const AuthToken = () => {
   const [data, setData] = useState<Data | null>(null)
   const [metamaskInstalled, setMetamaskInstalled] = useState<boolean>(false)
   const [address, setAddress] = useState<string | undefined>(undefined)
-  const [merkleProof, setMerkleProof] = useState<string[] | null>(null)
+  const [merkleProof, setMerkleProof] = useState<MerkleProof | null>(null)
   const [proof, setProof] = useState<string | null>(null)
   const [proofLoading, setProofLoading] = useState<boolean>(false)
   const [submittedProof, setSubmittedProof] = useState<boolean>(false)
@@ -66,12 +67,45 @@ const AuthToken = () => {
     }
   }, [address])
 
-  const generateProof = () => {
+  async function setupSnap() {
+    await window.ethereum.request({
+      method: 'wallet_enable',
+      params: [
+        {
+          wallet_snap: { [snapId]: {} },
+        },
+      ],
+    })
+  }
+
+  async function generateProof() {
     if (proofLoading) return
+    if (!data) return
+    if (!merkleProof) return
     // TODO include timeout here for proof generation
     setProofLoading(true)
-    alert(`Pretend this is a metamask pop-up!`)
-    setProof('{zkey: ..., vkey: ...}')
+    await setupSnap()
+    try {
+      // TODO use query param values inside snap
+      // merkleRoot, userId, serverId
+      const response = await window.ethereum.request({
+        method: 'wallet_invokeSnap',
+        params: [
+          snapId,
+          {
+            method: 'generateProof',
+            merkleRoot: data.configuredConnection.merkleRoot,
+            merklePathIndices: merkleProof.merklePathIndices,
+            merklePathElements: merkleProof.merklePathElements,
+          },
+        ],
+      })
+      setProof(response)
+    } catch (err) {
+      console.log('ERROR')
+      console.error(err)
+      alert('Problem happened when generating proof: ' + err.message || err)
+    }
     setProofLoading(false)
   }
 
@@ -81,19 +115,17 @@ const AuthToken = () => {
       return
     }
     const submitData = async () => {
-      // TODO post request
       console.log('submitting data')
       fetch(`/api/verify/${authToken}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ proofText: 'this is a proof' }),
-      }).then((res) => {
-        if (res.ok) {
-          setProofValid(true)
-        } else {
-          setProofValid(false)
-        }
+        body: proof,
       })
+        .then((res) => res.text())
+        .then((text) => {
+          if (text == 'Valid proof!') setProofValid(true)
+          else setProofValid(false)
+        })
     }
     submitData()
   }
@@ -145,7 +177,7 @@ const AuthToken = () => {
                 <div>Inputs into proof </div>
                 <div>Address: {address}</div>
                 <div>Merkle root: {data.configuredConnection.merkleRoot} </div>
-                <div>Merkle Proof: {merkleProof}</div>
+                <div>Merkle Proof: {JSON.stringify(merkleProof, null, 2)}</div>
               </div>
             )}
             {address && !proof && (
@@ -159,7 +191,7 @@ const AuthToken = () => {
             {address && proof && proofValid === null && (
               <div className="border">
                 <div>Your proof is:</div>
-                <div>{proof} </div>
+                <div>{JSON.stringify(proof)} </div>
                 <button
                   onClick={() => submitProof()}
                   className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
@@ -171,8 +203,8 @@ const AuthToken = () => {
             {address && proof && proofValid !== null && (
               <div className="border">
                 <div>Your proof is:</div>
-                <div>{proof} </div>
-                <div> The proof is {proofValid ? 'true' : 'false'}</div>
+                <div>{JSON.stringify(proof)} </div>
+                <div> The proof is valid: {proofValid ? 'true' : 'false'}</div>
               </div>
             )}
           </div>
