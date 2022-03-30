@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs';
+
 import pkg  from 'csvtojson';
 const { csv } = pkg;
 
@@ -36,8 +38,9 @@ async function getYearToAddresses(dataDir) {
   }
 }
 
-function getAddresses(addresses) {
-  return [...new Set(addresses)].map(BigInt);
+function jsonToAddresses(jsonFile) {
+  const data = JSON.parse(readFileSync(jsonFile));
+  return [...new Set(data['addresses'])]
 }
 
-export { getDevconAddresses, getYearToAddresses, getAddresses }
+export { getDevconAddresses, getYearToAddresses, jsonToAddresses}

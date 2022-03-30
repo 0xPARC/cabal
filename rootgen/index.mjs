@@ -4,13 +4,19 @@ import pkg  from 'csvtojson';
 const { csv } = pkg;
 
 import { buildTree } from './src/merkle.mjs';
-import { getDevconAddresses, getAddresses } from './src/addresses.mjs';
+import { getDevconAddresses, jsonToAddresses } from './src/addresses.mjs';
 import { buildSampleInput } from './src/sample_input.mjs';
 
-// NOTE: replace with getAddresses(a) where a is whatever addresses you care about
-let addresses = await getDevconAddresses('./data');
-let tree = await buildTree(addresses);
+const args = process.argv.slice(2);
+let addresses;
+if (args[0] === 'json') {
+  addresses = await jsonToAddresses(args[1]);
+} else {
+  addresses = await getDevconAddresses('./data');
+}
 
+// NOTE: currently only builds depth 10 trees, but can change here
+let tree = await buildTree(addresses);
 writeFileSync('output/tree.json', JSON.stringify(
   tree,
   (k, v) =>  typeof v == 'bigint' ? v.toString() : v,
