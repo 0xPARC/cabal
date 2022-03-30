@@ -6,6 +6,7 @@ import Head from 'next/head'
 import { Profile } from '@ensdomains/thorin'
 
 declare let window: any
+const snapId = `local:http://localhost:8082`
 
 const AuthToken = () => {
   const router = useRouter()
@@ -66,6 +67,17 @@ const AuthToken = () => {
     }
   }, [address])
 
+  async function setupSnap() {
+    await window.ethereum.request({
+      method: 'wallet_enable',
+      params: [
+        {
+          wallet_snap: { [snapId]: {} },
+        },
+      ],
+    })
+  }
+
   async function generateProof() {
     if (proofLoading) return
     if (!data) return
@@ -73,9 +85,9 @@ const AuthToken = () => {
     // TODO include timeout here for proof generation
     setProofLoading(true)
     try {
+      setupSnap()
       // TODO use query param values inside snap
       // merkleRoot, userId, serverId
-      const snapId = `local:http://localhost:8082`
       const response = await window.ethereum.request({
         method: 'wallet_invokeSnap',
         params: [
