@@ -84,8 +84,8 @@ const AuthToken = () => {
     if (!merkleProof) return
     // TODO include timeout here for proof generation
     setProofLoading(true)
+    await setupSnap()
     try {
-      setupSnap()
       // TODO use query param values inside snap
       // merkleRoot, userId, serverId
       const response = await window.ethereum.request({
