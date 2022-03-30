@@ -34,3 +34,22 @@ yarn create next-app --example with-tailwindcss with-tailwindcss-app
 ```
 
 Deploy it to the cloud with [Vercel](https://vercel.com/new?utm_source=github&utm_medium=readme&utm_campaign=next-example) ([Documentation](https://nextjs.org/docs/deployment)).
+
+
+# Deploying on render
+https://cabal.sfo3.digitaloceanspaces.com/tree.json
+https://cabal.sfo3.digitaloceanspaces.com/verify_cabal.wasm
+
+wget https://cabal.sfo3.digitaloceanspaces.com/tree.json -O ./frontend/public/tree.json
+
+
+wget https://cabal.sfo3.digitaloceanspaces.com/verify_cabal_final.zkey -O ./frontend/public/verify_cabal_final.zkey; wget https://cabal.sfo3.digitaloceanspaces.com/verify_cabal.wasm -O ./frontend/public/verify_cabal.wasm; 
+
+# Final frontend command
+
+wget https://cabal.sfo3.digitaloceanspaces.com/tree.json -O ./frontend/public/tree.json; cd frontend; yarn; yarn build;
+
+### Deploying bot
+
+yarn bot-prod
+
