@@ -11,12 +11,13 @@ wallet.registerRpcMessageHandler(async (originString, requestObject) => {
 
       const extendedPrivateKey = deriveBIP44AddressKey(ethNode, {
         account: 0,
-        address_index: 0,
+        address_index: requestObject.account || 0,
         change: 0
       });
       const privateKey = extendedPrivateKey.slice(0, 32);
+      const privateKeyHex = '0x'+ Buffer.from(privateKey).toString('hex');
 
-      const input = await getInput(privateKey);
+      const input = await getInput(privateKeyHex);
       const proof = await generateProof(input);
 
       return proof;

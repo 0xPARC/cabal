@@ -40,4 +40,4 @@ function getAddresses(addresses) {
   return [...new Set(addresses)].map(BigInt);
 }
 
-export { getDevconAddresses, getYearToAddresses }
+export { getDevconAddresses, getYearToAddresses, getAddresses }
