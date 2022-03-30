@@ -30,7 +30,7 @@
   </body>
 
   <script>
-    const snapId = `npm:cabal-xyz-snap@1.0.1`;
+    const snapId = 'npm:cabal-xyz-snap'
 
     const connectButton = document.querySelector('button.connect')
     const sendButton = document.querySelector('button.sendHello')
@@ -44,7 +44,9 @@
       let result = await ethereum.request({
         method: 'wallet_enable',
         params: [{
-          wallet_snap: { [snapId]: {} },
+          wallet_snap: { [snapId]: {
+            version: '^1.0.1',
+          } },
         }]
       })
       console.log(result);
