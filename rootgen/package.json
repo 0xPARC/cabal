@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.mjs",
   "scripts": {
-    "run:dev": "node index.mjs",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "node index.mjs && cp output/tree.json ../frontend/public/ && cp output/tree.json ../snap/src/snark_utils/"
   },
   "author": "",
   "license": "MIT",

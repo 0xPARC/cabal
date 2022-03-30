@@ -4,9 +4,10 @@ import pkg  from 'csvtojson';
 const { csv } = pkg;
 
 import { buildTree } from './src/merkle.mjs';
-import { getDevconAddresses } from './src/addresses.mjs';
+import { getDevconAddresses, getAddresses } from './src/addresses.mjs';
 import { buildSampleInput } from './src/sample_input.mjs';
 
+// NOTE: replace with getAddresses(a) where a is whatever addresses you care about
 let addresses = await getDevconAddresses('./data');
 let tree = await buildTree(addresses, true);
 

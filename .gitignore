@@ -3,3 +3,5 @@
 
 *.zkey
 *.wasm
+
+tree.json

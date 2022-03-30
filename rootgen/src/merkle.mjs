@@ -12,7 +12,7 @@ const TESTER_ADDRS = [
   '0xda1EA97d4c6D723125B26E4a1441C399d0EA0bE4',
   '0x05b9Df7825DE3c65A7D0386bD470F32a7008bC0c',
   '0xb032BA0CbF94CfE9A377aD4060624cA31CEEdE43'
-].map(BigInt);
+];
 
 // NOTE: taken from cabal-xyz
 async function buildTree(leaves, testAddrs=true) {
@@ -20,6 +20,7 @@ async function buildTree(leaves, testAddrs=true) {
     leaves = leaves.concat(TESTER_ADDRS);
   }
 
+  leaves = leaves.map(BigInt)
   leaves.sort();
 
   // the equivalent of pathElements and pathIndices in merkle.circom
