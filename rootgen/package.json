@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.mjs",
   "scripts": {
-    "build": "node index.mjs && cp output/tree.json ../frontend/public/ && cp output/tree.json ../snap/src/snark_utils/"
+    "build": "node index.mjs && cp output/tree.json ../frontend/public/"
   },
   "author": "",
   "license": "MIT",
