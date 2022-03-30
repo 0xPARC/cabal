@@ -182,10 +182,12 @@ const AuthToken = () => {
   const answers = [
     'Running magic moon math in the browser',
     "Vitalik probably thinks you're cool for generating a ZK proof",
-    'Welcome to the future',
-    "Pop quiz: what's the difference between the ate, tate and kate pairing?",
+    'Welcome to the future of b l o c k c h a i n',
+    "Pop quiz: what's the difference between the ate, tate pairing?",
     'Bonus question: are ate, kate, and tate related?',
-    "If you think this is slow, why dont' you try computing x^2=...",
+    "If you think this is slow, why don't you try solving y^2=x^2+Ax^2+x yourself?",
+    '👻👻👻👻👻👻',
+    'Running automated venture capitalist detection...',
   ]
 
   useEffect(() => {
@@ -300,7 +302,9 @@ const AuthToken = () => {
             {address && !proof && proofLoading && (
               <div>
                 <div className="py-2 px-4">Generating Proof...</div>
-                <div className="py-2 px-4 font-bold">{loadingText}</div>
+                <div className="py-2 px-4 font-bold text-blue-500">
+                  {loadingText}
+                </div>
               </div>
             )}
             {address && !proof && !proofLoading && (
