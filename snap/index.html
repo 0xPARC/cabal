@@ -44,11 +44,11 @@
       let result = await ethereum.request({
         method: 'wallet_enable',
         params: [{
-          wallet_snap: { [snapId]: {
-            version: '^1.0.1',
-          } },
-        }]
-      })
+           wallet_snap: {
+             [snapId]: {},
+           },
+        }],
+      });
       console.log(result);
     }
 
