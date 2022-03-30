@@ -1,13 +1,17 @@
 {
-  "version": "1.0.0",
-  "description": "Cabal Snap",
-  "proposedName": "cabal-snap",
+  "version": "1.0.1",
+  "description": "Snap for cabal.xyz",
+  "proposedName": "cabal-xyz-snap",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:0xPARC/cabal.git"
+  },
   "source": {
-    "shasum": "0GKLE3joDCpl4GH17/Dj0/HrP6ch0AQ+ENMljaSNFJM=",
+    "shasum": "XXZBisAZRJiowzXUOF2KR4QHKhnxhvkfhXl0OkJ5wlI=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",
-        "packageName": "cabal-snap",
+        "packageName": "cabal-xyz-snap",
         "registry": "https://registry.npmjs.org"
       }
     }
