@@ -3,14 +3,14 @@
 import { groth16 } from 'snarkjs'
 import builder from './witness_calculator'
 
-const zkeyPath = "./VerifyCabal_64-4-10_prod.0.zkey"
-const wasmPath = "./VerifyCabal_64-4-10_prod.wasm"
+const zkeyPath = "http://localhost:3000/VerifyCabal_64-4-10_prod.0.zkey";
+const wasmPath = "http://localhost:3000/VerifyCabal_64-4-10_prod.wasm";
 
 export const generateProof = async (input) => {
+    const wtnsBuff = await generateWitness(input);
+
     const zkeyResp = await fetch(zkeyPath);
     const zkeyBuff = await zkeyResp.arrayBuffer();
-
-    const wtnsBuff = await generateWitness(input);
 
     const { proof, publicSignals } = await groth16.prove(
         new Uint8Array(zkeyBuff),
@@ -23,15 +23,7 @@ export const generateProof = async (input) => {
 export const generateWitness = async (input) => {
     const wasmResp = await fetch(wasmPath);
     const wasmBuff = await wasmResp.arrayBuffer();
-
-  return new Promise((resolve, reject) => {
-    builder(wasmBuff)
-    .then(async witnessCalculator => {
-        const buff = await witnessCalculator.calculateWTNSBin(input, 0);
-        resolve(buff);
-    })
-    .catch(error => {
-        reject(error);
-    });
-  });
+    const witnessCalculator = await builder(wasmBuff);
+    const wtnsBuff = await witnessCalculator.calculateWTNSBin(input, 0);
+    return wtnsBuff;
 };
