@@ -15,6 +15,7 @@ const TESTER_ADDRS = [
 
   "0x4fe67C37Bf6439db25d4e3A65FD0DE50Dcd40A82", // NOTE: LS test mm address
   "0xBC4Ffd9cD21a127FB883e5d3d2e4697BB7B2Af20",
+  "0xE5Af09a906B409D31aBffeCa0576D962fe46248A",
 ];
 
 // NOTE: taken from cabal-xyz
