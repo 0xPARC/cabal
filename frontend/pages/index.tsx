@@ -16,7 +16,7 @@ const isMetaMaskInstalled = () => {
 }
 
 interface Network {
-  name: string,
+  name: string
   chainId: number
 }
 
@@ -43,9 +43,9 @@ export default function Home() {
   const hasValidProofInput = validateQueryParams(merkleRoot, userId, serverId)
 
   // TODO: this is only for local dev
-  const snapId = `local:http://localhost:8082`;
+  const snapId = `local:http://localhost:8082`
 
-  async function setupProfileInfo(signer: any, provider: any){
+  async function setupProfileInfo(signer: any, provider: any) {
     const addr = await signer.getAddress()
     setAddress(addr)
     const name = await provider.lookupAddress(addr)
@@ -56,10 +56,10 @@ export default function Home() {
     }
   }
 
-  async function setup(){
+  async function setup() {
     const { signer, provider, network } = await setupWeb3()
     setNetwork(network)
-    
+
     await setupProfileInfo(signer, provider)
     setMetamaskConnected(true)
     await setupSnap()
@@ -67,42 +67,43 @@ export default function Home() {
   }
 
   // Get permissions to interact with and install the snap
-  async function setupSnap(){
+  async function setupSnap() {
     await window.ethereum.request({
       method: 'wallet_enable',
-      params: [{
-        wallet_snap: { [snapId]: {} },
-      }]
+      params: [
+        {
+          wallet_snap: { [snapId]: {} },
+        },
+      ],
     })
   }
 
-  async function generateProof(){
+  async function generateProof() {
     try {
       // TODO use query param values inside snap
       // merkleRoot, userId, serverId
       setGeneratingProof(true)
       const response = await window.ethereum.request({
         method: 'wallet_invokeSnap',
-        params: [snapId, {
-          method: 'generateProof'
-        }]
+        params: [
+          snapId,
+          {
+            method: 'generateProof',
+          },
+        ],
       })
       setGeneratingProof(false)
-      console.log('Private key byte array (as ints) below:');
-      console.log(response);
-      //replace with proof
-      setProof("12345")
+      setProof(response)
     } catch (err) {
-      console.log('ERROR');
+      console.log('ERROR')
       console.error(err)
       alert('Problem happened: ' + err.message || err)
     }
   }
 
-  function submitProof(){
+  function submitProof() {
     console.log('submitting proof')
   }
-
 
   useEffect(() => {
     const installed = isMetaMaskInstalled()
@@ -119,9 +120,13 @@ export default function Home() {
       <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
         <header>
           {address && (
-            <div className="fixed top-2.5 right-2.5 p-2.5 flex items-center">
+            <div className="fixed top-2.5 right-2.5 flex items-center p-2.5">
               {network && <Network>{network.name}</Network>}
-              <Profile address={address} ensName={name ? name : undefined}avatar={avatar} />
+              <Profile
+                address={address}
+                ensName={name ? name : undefined}
+                avatar={avatar}
+              />
             </div>
           )}
         </header>
@@ -148,21 +153,35 @@ export default function Home() {
           )}
           {console.log(metamaskConnected)}
 
-          {metamaskConnected && hasValidProofInput && <Action onClick={generateProof} loading={generatingProof} loadingText="Generating Proof..." completed={!!proof} completedText="Proof generated">
-             Generate Proof
-            </Action>}
+          {false && metamaskConnected && hasValidProofInput && (
+            <Action
+              onClick={generateProof}
+              loading={generatingProof}
+              loadingText="Generating Proof..."
+              completed={!!proof}
+              completedText="Proof generated"
+            >
+              Generate Proof
+            </Action>
+          )}
 
-          {
-            !hasValidProofInput && <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
+          {false && !hasValidProofInput && (
+            <div className="mt-6 flex max-w-4xl flex-wrap items-center justify-around sm:w-full">
               No proof input detected.
-          </div>
-          }
+            </div>
+          )}
 
-          {
-            metamaskConnected && proof && <Action onClick={submitProof} loading={false} loadingText="Submitting Proof..." completed={false} completedText="Proof verified!">
-            Submit Proof
-           </Action>
-          }
+          {false && metamaskConnected && proof && (
+            <Action
+              onClick={submitProof}
+              loading={false}
+              loadingText="Submitting Proof..."
+              completed={false}
+              completedText="Proof verified!"
+            >
+              Submit Proof
+            </Action>
+          )}
         </div>
       </main>
 

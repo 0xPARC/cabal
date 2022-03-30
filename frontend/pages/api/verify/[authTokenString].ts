@@ -1,6 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
-
+import snarkjs from 'snarkjs'
 import { PrismaClient } from '@prisma/client'
 import {
   Guild,
@@ -19,6 +19,7 @@ import {
   IntegrationApplication,
 } from 'discord.js'
 import 'dotenv/config'
+import fs from 'fs'
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] })
 client.login(process.env.DISCORD_TOKEN)
@@ -30,12 +31,17 @@ client.on('ready', () => {
   clientReady = true
 })
 
+export type MerkleProof = {
+  merklePathIndices: number[]
+  merklePathElements: string[]
+}
+
 export type Data = {
   configuredConnection: ConfiguredConnection
   guild: Guild
   role: Role
   user: User
-  merkleProofsByAddr: Record<string, string[]>
+  merkleProofsByAddr: Record<string, MerkleProof>
 }
 
 type Error = {
@@ -72,8 +78,15 @@ export default async function handler(
         authTokenString: authTokenString,
       },
     })
-    // TODO verify proof here
-    const proofVerified = true
+
+    const vkeyFile = fs.readFileSync('./verification_key.json')
+    const vkey = JSON.parse(vkeyFile.toString())
+    const proofVerified = await snarkjs.groth16.verify(
+      vkey,
+      req.body.publicSignals,
+      req.body.proof
+    )
+
     if (proofVerified) {
       // discord add role
       const guildId = authToken.configuredConnection.guildId
@@ -88,10 +101,11 @@ export default async function handler(
       }
       const roleId = authToken.configuredConnection.roleId
       await member.roles.add([roleId])
+      res.status(200).send('Valid proof!')
+      return
+    } else {
+      res.status(200).send('Invalid proof!')
     }
-    res.status(200).send('ok')
-
-    return
   }
 
   // This is for GET
@@ -112,10 +126,13 @@ export default async function handler(
     guild: guild,
     user: authToken.user,
     merkleProofsByAddr: {
-      '0x3Af621b0a91F667B38A652Aff8B5d5c9855dD737': [
-        '0x35f3d53b4fe1cbE59810687BB2b0795778d8605F',
-        '0x123d53b4fe1cbE59810687BB2b0795778d8605F',
-      ],
+      '0x3Af621b0a91F667B38A652Aff8B5d5c9855dD737': {
+        merklePathElements: [
+          '0x35f3d53b4fe1cbE59810687BB2b0795778d8605F',
+          '0x123d53b4fe1cbE59810687BB2b0795778d8605F',
+        ],
+        merklePathIndices: [0, 1, 0],
+      },
     },
   })
 }
