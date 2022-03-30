@@ -9,7 +9,7 @@ import { buildPoseidon } from 'circomlibjs';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-describe.only("verify cabal e2e", function () {
+describe("verify cabal e2e", function () {
   this.timeout(1000 * 1000);
 
   it("handle sample_input.json", async () => {

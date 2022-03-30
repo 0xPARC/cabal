@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.mjs",
   "scripts": {
-    "build": "node index.mjs && cp output/tree.json ../frontend/public/"
+    "build": "node index.mjs json data/test_addrs.json && cp output/tree.json ../frontend/public/"
   },
   "author": "",
   "license": "MIT",

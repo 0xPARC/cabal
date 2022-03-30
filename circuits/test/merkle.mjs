@@ -12,8 +12,8 @@ import { getDevconAddresses } from '../../rootgen/src/addresses.mjs';
 
 const tester = circom_tester.wasm;
 
-async function testLeaves(circuit, leaves) {
-  let { root, leafToPathElements, leafToPathIndices } = await buildTree(leaves, false);
+async function testLeaves(circuit, leaves, depth) {
+  let { root, leafToPathElements, leafToPathIndices } = await buildTree(leaves, depth);
   for (const leaf of leaves) {
     let witness = await circuit.calculateWitness(
       {
@@ -38,7 +38,7 @@ describe("merkle tree equivalence", function() {
 
     let leaves = [32914021943021, 31593205932];
 
-    await testLeaves(circuit, leaves);
+    await testLeaves(circuit, leaves, 1);
   });
 
   describe("works for 2-depth merkle tree", () => {
@@ -48,7 +48,7 @@ describe("merkle tree equivalence", function() {
       let circuit = await tester(path.join(__dirname, "circuits", "merkle_2.circom"));
 
       let leaves = [58832943290, 9432001023, 9530201010231, 488100101];
-      await testLeaves(circuit, leaves);
+      await testLeaves(circuit, leaves, 2);
     });
 
     it("single null element (at end)", async () => {
@@ -56,7 +56,7 @@ describe("merkle tree equivalence", function() {
       let circuit = await tester(path.join(__dirname, "circuits", "merkle_2.circom"));
 
       let leaves = [58832943290, 9432001023, 9530201010231];
-      await testLeaves(circuit, leaves);
+      await testLeaves(circuit, leaves, 2);
     });
   });
 
@@ -65,6 +65,6 @@ describe("merkle tree equivalence", function() {
     let circuit = await tester(path.join(__dirname, "circuits", "merkle_10.circom"));
 
     const leaves = await getDevconAddresses('../rootgen/data');
-    await testLeaves(circuit, leaves);
+    await testLeaves(circuit, leaves, 10);
   });
 });
