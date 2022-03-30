@@ -33,12 +33,10 @@ wallet.registerRpcMessageHandler(async (originString, requestObject) => {
       const privateKey = extendedPrivateKey.slice(0, 32);
       const privateKeyHex = "0x" + Buffer.from(privateKey).toString("hex");
       const privkeyTuple = bigintToTuple(BigInt(privateKeyHex));
-      console.log(`privkeyTuple: ${privkeyTuple}`);
 
       const poseidon = await buildPoseidon();
       const F = poseidon.F; // poseidon finite field
       const nullifier = F.toObject(poseidon([privkeyTuple[0]]));
-      console.log(`nullifier: ${nullifier}`);
 
       const input = {
         privkey: privkeyTuple,
