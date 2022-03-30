@@ -9,7 +9,7 @@ import { buildSampleInput } from './src/sample_input.mjs';
 
 // NOTE: replace with getAddresses(a) where a is whatever addresses you care about
 let addresses = await getDevconAddresses('./data');
-let tree = await buildTree(addresses, true);
+let tree = await buildTree(addresses);
 
 writeFileSync('output/tree.json', JSON.stringify(
   tree,
