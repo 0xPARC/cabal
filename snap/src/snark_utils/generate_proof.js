@@ -3,10 +3,6 @@
 import { groth16 } from "snarkjs";
 import builder from "./witness_calculator";
 
-// const zkeyPath = "http://localhost:3000/VerifyCabal_64-4-10_prod.0.zkey";
-// const wasmPath = "http://localhost:3000/VerifyCabal_64-4-10_prod.wasm";
-// const zkeyPath = "https://cabal.xyz/verify_cabal_final.zkey";
-// const wasmPath = "https://cabal.xyz/verify_cabal.wasm";
 const zkeyPath = "https://cabal.sfo3.digitaloceanspaces.com/verify_cabal_final.zkey";
 const wasmPath = "https://cabal.sfo3.digitaloceanspaces.com/verify_cabal.wasm";
 
