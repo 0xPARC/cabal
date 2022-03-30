@@ -51,5 +51,11 @@ wget https://cabal.sfo3.digitaloceanspaces.com/tree.json -O ./frontend/public/tr
 
 ### Deploying bot
 
-yarn bot-prod
+Build:
+yarn; npx tsc --project tsconfig.bot.json
+Deploy:
+npx pm2 start bot.js
+List
+npx pm2 list
 
+[Deprecated]: yarn bot-prod

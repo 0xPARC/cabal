@@ -84,6 +84,14 @@ export default async function handler(
     console.log(req.body)
     console.log(req.body.proof)
     console.log(req.body.publicSignals)
+    // publicSignals = [
+    //   "405120837482288270193709312274786634591916908889974263035122340142620319115",
+    //   "11575659063411809053808698653243228788610440614219455013616072495564231950142"
+    // ]
+    // first is nullfier, second is merkleRoot
+    // verify merkleRoot matches merkleRoot in configuredConnection
+    // verify that nullifier has not been used before?
+
     // const vkeyFile = fs.readFileSync('./verification_key.json')
     // const vkey = JSON.parse(vkeyFile.toString())
     const proofVerified = await groth16.verify(
