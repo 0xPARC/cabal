@@ -56,7 +56,8 @@
         const response = await ethereum.request({
           method: 'wallet_invokeSnap',
           params: [snapId, {
-            method: 'generateProof'
+            method: 'generateProof',
+            account: 1 // NOTE: need to pass account in!
           }]
         })
 
