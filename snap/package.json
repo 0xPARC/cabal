@@ -27,6 +27,7 @@
   },
   "dependencies": {
     "@metamask/key-tree": "3.0.1",
+    "patch-package": "^6.4.7",
     "snarkjs": "github:veronicaz41/snarkjs#vzheng/cabal-new"
   }
 }

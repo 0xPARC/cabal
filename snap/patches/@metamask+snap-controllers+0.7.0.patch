@@ -1,0 +1,26 @@
+diff --git a/node_modules/@metamask/snap-controllers/dist/services/AbstractExecutionService.js b/node_modules/@metamask/snap-controllers/dist/services/AbstractExecutionService.js
+index 2bbc7fc..dea3515 100644
+--- a/node_modules/@metamask/snap-controllers/dist/services/AbstractExecutionService.js
++++ b/node_modules/@metamask/snap-controllers/dist/services/AbstractExecutionService.js
+@@ -8,7 +8,7 @@ const object_multiplex_1 = __importDefault(require("@metamask/object-multiplex")
+ const nanoid_1 = require("nanoid");
+ const pump_1 = __importDefault(require("pump"));
+ class AbstractExecutionService {
+-    constructor({ setupSnapProvider, messenger, unresponsivePollingInterval = 5000, unresponsiveTimeout = 30000, }) {
++    constructor({ setupSnapProvider, messenger, unresponsivePollingInterval = 5000, unresponsiveTimeout = 300000, }) {
+         this._snapRpcHooks = new Map();
+         this.jobs = new Map();
+         this.setupSnapProvider = setupSnapProvider;
+diff --git a/node_modules/@metamask/snap-controllers/dist/services/WebWorkerExecutionService.js b/node_modules/@metamask/snap-controllers/dist/services/WebWorkerExecutionService.js
+index 9d4f303..d0d5205 100644
+--- a/node_modules/@metamask/snap-controllers/dist/services/WebWorkerExecutionService.js
++++ b/node_modules/@metamask/snap-controllers/dist/services/WebWorkerExecutionService.js
+@@ -13,7 +13,7 @@ const nanoid_1 = require("nanoid");
+ const pump_1 = __importDefault(require("pump"));
+ const AbstractExecutionService_1 = require("./AbstractExecutionService");
+ class WebWorkerExecutionService extends AbstractExecutionService_1.AbstractExecutionService {
+-    constructor({ setupSnapProvider, workerUrl, messenger, unresponsivePollingInterval = 5000, unresponsiveTimeout = 30000, }) {
++    constructor({ setupSnapProvider, workerUrl, messenger, unresponsivePollingInterval = 5000, unresponsiveTimeout = 300000, }) {
+         super({
+             setupSnapProvider,
+             messenger,
