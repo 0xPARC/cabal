@@ -21,6 +21,7 @@
     "prisma": "^3.11.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "snarkjs": "^0.4.15",
     "styled-components": "^5.3.3",
     "swr": "^1.2.2"
   },

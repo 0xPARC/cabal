@@ -62,9 +62,22 @@ const AuthToken = () => {
 
   useEffect(() => {
     if (!address) return
-    if (data?.merkleProofsByAddr[address]) {
-      setMerkleProof(data.merkleProofsByAddr[address])
+    // TODO eventualy have this served from backend
+    const getProof = async () => {
+      fetch('/tree.json')
+        .then((res) => res.json())
+        .then((merkleProofData) => {
+          console.log(merkleProofData)
+          const myProof = {
+            merklePathElements:
+              merkleProofData.leafToPathElements[BigInt(address).toString()],
+            merklePathIndices:
+              merkleProofData.leafToPathIndices[BigInt(address).toString()],
+          }
+          setMerkleProof(myProof)
+        })
     }
+    getProof()
   }, [address])
 
   async function setupSnap() {
@@ -100,6 +113,7 @@ const AuthToken = () => {
           },
         ],
       })
+      console.log(response)
       setProof(response)
     } catch (err) {
       console.log('ERROR')
@@ -114,12 +128,13 @@ const AuthToken = () => {
       alert('There is no proof! Something weird is going on.')
       return
     }
+    console.log(proof)
     const submitData = async () => {
       console.log('submitting data')
       fetch(`/api/verify/${authToken}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: proof,
+        body: JSON.stringify(proof),
       })
         .then((res) => res.text())
         .then((text) => {
