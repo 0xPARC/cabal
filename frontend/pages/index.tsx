@@ -2,10 +2,10 @@ import Head from 'next/head'
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { Profile } from '@ensdomains/thorin'
-import { setupWeb3 } from './web3'
+import { setupWeb3 } from '../lib/web3'
 import { useRouter } from 'next/router'
-import { validateQueryParams } from './utils'
-import Action from './components/Action'
+import { validateQueryParams } from '../lib/utils'
+import Action from '../components/Action'
 
 declare let window: any
 
