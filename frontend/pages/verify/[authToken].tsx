@@ -5,6 +5,10 @@ import { Data, MerkleProof } from '../api/verify/[authTokenString]'
 import Head from 'next/head'
 import { Profile } from '@ensdomains/thorin'
 
+import Header from '../components/Header'
+import AuthInfo from '../components/AuthInfo'
+import SubmitProof from '../components/SubmitProof'
+
 declare let window: any
 const snapId = `local:http://localhost:8082`
 
@@ -94,6 +98,7 @@ const AuthToken = () => {
           snapId,
           {
             method: 'generateProof',
+            number: 1,
             merkleRoot: data.configuredConnection.merkleRoot,
             merklePathIndices: merkleProof.merklePathIndices,
             merklePathElements: merkleProof.merklePathElements,
@@ -131,43 +136,80 @@ const AuthToken = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center py-2">
+    <div className="">
       <Head>
         <title>verify cabal.xyz</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <Header />
+      <div className="mx-auto max-w-3xl px-2 sm:px-6 md:flex md:items-center md:justify-between md:space-x-5 lg:max-w-7xl lg:px-8">
+        <div className="flex items-center space-x-5 space-y-10">
+          <div className="flex-shrink-0 text-2xl">
+            Get verified with cabal.xyz
+          </div>
+        </div>
+      </div>
+      {data && (
+        <AuthInfo
+          userName={data.user.userName}
+          serverName={data.guild.guildName}
+          merkleRoot={data.configuredConnection.merkleRoot}
+          roleName={data.role.roleName}
+        />
+      )}
+      {data && <SubmitProof />}
 
-      <main className="flex w-full flex-1 flex-col items-center justify-center px-20 text-center">
-        <header>
-          {address ? (
-            <div className="fixed top-2.5 right-2.5 p-2.5">
+      <header>
+        <div className="relative flex">
+          <div className="flex-1 p-2.5 text-2xl font-bold">cabal.xyz</div>
+          <div className="p-2.5">
+            {address ? (
               <Profile address={address} ensName={undefined} />
-            </div>
-          ) : (
-            <button
-              className="fixed top-2.5 right-2.5 rounded bg-blue-500 p-2.5 py-2 px-4 font-bold text-white hover:bg-blue-700"
-              onClick={metamaskInstalled ? setupWeb3 : () => {}}
-            >
-              {metamaskInstalled
-                ? 'Connect to Metamask'
-                : 'Metamask not installed'}
-            </button>
-          )}
-        </header>
-
-        {data && (
-          <div>
-            <h1 className="text-6xl font-bold text-blue-600">
-              Generating verification
-              {/* <a className="text-blue-600" href="https://cabal.xyz">
+            ) : (
+              <button
+                className="rounded bg-blue-500 font-bold text-white hover:bg-blue-700"
+                onClick={metamaskInstalled ? setupWeb3 : () => {}}
+              >
+                {metamaskInstalled
+                  ? 'Connect to Metamask'
+                  : 'Metamask not installed'}
+              </button>
+            )}
+          </div>
+        </div>
+      </header>
+      <h1 className="p-2.5 text-6xl font-bold text-blue-600">
+        Get Verified with cabal.xyz
+        {/* <a className="text-blue-600" href="https://cabal.xyz">
                 {data.user.userName}
               </a> */}
-            </h1>
+      </h1>
+      <main>
+        {data && (
+          <div className="flex w-full px-20 text-center">
+            {/* This is the info card */}
             <div className="border">
               <div>User Name: {data.user.userName} </div>
               <div>Server Name: {data.guild.guildName}</div>
               <div>Merkle Root: {data.configuredConnection.merkleRoot}</div>
               <div>Role: {data.role.roleName}</div>
+            </div>
+
+            <div className="border">
+              <button
+                className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
+                onClick={() => generateProof()}
+              >
+                {proofLoading ? `Proof Loading` : `Generate Proof`}
+              </button>
+              <div>Your proof is:</div>
+              <div>{JSON.stringify(proof)} </div>
+              <button
+                onClick={() => submitProof()}
+                className="rounded bg-blue-500 py-2 px-4 font-bold text-white hover:bg-blue-700"
+              >
+                Submit Generated Proof
+              </button>
             </div>
 
             {!address && <div> Please connect with metamask </div>}
