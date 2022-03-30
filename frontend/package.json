@@ -15,6 +15,7 @@
     "cors": "^2.8.5",
     "debug": "^4.3.4",
     "discord.js": "^13.6.0",
+    "dotenv": "^16.0.0",
     "ethers": "5.6",
     "express": "^4.17.3",
     "next": "latest",
