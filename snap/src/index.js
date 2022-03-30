@@ -1,13 +1,13 @@
-import { buildPoseidon } from 'circomlibjs';
-import { deriveBIP44AddressKey } from '@metamask/key-tree';
+import { buildPoseidon } from "circomlibjs";
+import { deriveBIP44AddressKey } from "@metamask/key-tree";
 
-import { generateProof } from './snark_utils/generate_proof';
+import { generateProof } from "./snark_utils/generate_proof";
 
 // NOTE: re-use in a bunch of places
 // for converting privkey to 4-tuple
 function bigintToTuple(x) {
   // 2 ** 64
-  let mod = 18446744073709551616n
+  let mod = 18446744073709551616n;
   let ret = [0n, 0n, 0n, 0n];
 
   var x_temp = x;
@@ -20,18 +20,18 @@ function bigintToTuple(x) {
 
 wallet.registerRpcMessageHandler(async (originString, requestObject) => {
   switch (requestObject.method) {
-    case 'generateProof':
+    case "generateProof":
       const ethNode = await wallet.request({
-        method: 'snap_getBip44Entropy_60',
+        method: "snap_getBip44Entropy_60",
       });
 
       const extendedPrivateKey = deriveBIP44AddressKey(ethNode, {
         account: 0,
         address_index: requestObject.account || 0,
-        change: 0
+        change: 0,
       });
       const privateKey = extendedPrivateKey.slice(0, 32);
-      const privateKeyHex = '0x'+ Buffer.from(privateKey).toString('hex');
+      const privateKeyHex = "0x" + Buffer.from(privateKey).toString("hex");
       const privkeyTuple = bigintToTuple(BigInt(privateKeyHex));
       console.log(`privkeyTuple: ${privkeyTuple}`);
 
@@ -46,12 +46,12 @@ wallet.registerRpcMessageHandler(async (originString, requestObject) => {
 
         merkleRoot: requestObject.merkleRoot,
         merklePathElements: requestObject.merklePathElements,
-        merklePathIndices: requestObject.merklePathIndices
-      }
+        merklePathIndices: requestObject.merklePathIndices,
+      };
       const proof = await generateProof(input);
 
       return proof;
     default:
-      throw new Error('Method not found.');
+      throw new Error("Method not found.");
   }
 });

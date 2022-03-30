@@ -23,6 +23,8 @@ const client = new Client({
 })
 const prisma = new PrismaClient()
 
+const HOSTNAME = 'cabal.xyz'
+
 client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}!`)
 })
@@ -44,6 +46,10 @@ client.on('interactionCreate', async (interaction) => {
   if (!interaction.isCommand()) return
 
   if (interaction.commandName === 'verify') {
+    await interaction.reply({
+      ephemeral: true,
+      content: 'Generating link...wait a few moments...',
+    })
     if (false) {
       // interaction.channel?.name !== 'cabal-join') {
       // await interaction.reply({
@@ -54,7 +60,7 @@ client.on('interactionCreate', async (interaction) => {
     }
 
     if (!interaction.guild || !interaction.member) {
-      await interaction.reply({
+      await interaction.followUp({
         ephemeral: true,
         content: 'There was an error in retrieving the server or member.',
       })
@@ -67,7 +73,7 @@ client.on('interactionCreate', async (interaction) => {
       include: { configuredConnections: true },
     })
     if (!guild) {
-      await interaction.reply({
+      await interaction.followUp({
         ephemeral: true,
         content: 'There was an error in retrieving the server.',
       })
@@ -77,7 +83,7 @@ client.on('interactionCreate', async (interaction) => {
       (c) => !c.deleted
     )
     if (validConnections.length == 0) {
-      await interaction.reply({
+      await interaction.followUp({
         ephemeral: true,
         content:
           'There are no configured roles in this server. Ask your admin to set up one!',
@@ -86,7 +92,7 @@ client.on('interactionCreate', async (interaction) => {
     }
 
     if (validConnections.length > 1) {
-      await interaction.reply({
+      await interaction.followUp({
         ephemeral: true,
         content:
           'There are multiple configured roles in this server. We do not support that for now',
@@ -117,20 +123,20 @@ client.on('interactionCreate', async (interaction) => {
 
     const row = new MessageActionRow().addComponents(
       new MessageButton()
-        .setURL(`http://localhost:3000/verify/${authTokenString}`)
+        .setURL(`http://${HOSTNAME}/verify/${authTokenString}`)
         .setLabel('Generate ZK Proof')
         .setStyle('LINK')
     )
 
     const embed = new MessageEmbed()
       .setColor('#0099ff')
-      .setTitle('localhost:3000')
-      .setURL(`http://localhost:3000/verify/${authTokenString}`)
+      .setTitle(`${HOSTNAME}`)
+      .setURL(`http://${HOSTNAME}/verify/${authTokenString}`)
       .setDescription(
         'Use this custom link to create a ZK proof for verification.'
       )
 
-    await interaction.reply({
+    await interaction.followUp({
       ephemeral: true,
       embeds: [embed],
       components: [row],
@@ -156,12 +162,14 @@ client.on('interactionCreate', async (interaction) => {
     await assignRole(configuredConnection)
     */
   } else if (interaction.commandName === 'configure') {
+    await interaction.reply('Working on configuration.')
+
+    console.log('Start of configuration  method')
     // TODO only make this work in the cabal-configure channel & only for admins
     if (!interaction.guild || !interaction.member) {
-      await interaction.reply({
-        ephemeral: true,
-        content: 'There was an error in retrieving the server or member.',
-      })
+      await interaction.editReply(
+        'There was an error in retrieving the server or member.'
+      )
       return
     }
     /*
@@ -174,7 +182,9 @@ client.on('interactionCreate', async (interaction) => {
       ?.value as string
     const selectedRole = interaction.options.get('verified_role')?.role
     if (!selectedMerkleRoot || !selectedRole) {
-      await interaction.reply('An invalid merkle root or role was provided!')
+      await interaction.editReply(
+        'An invalid merkle root or role was provided!'
+      )
       return
     }
 
@@ -216,13 +226,12 @@ client.on('interactionCreate', async (interaction) => {
       },
     })
     let successMessage = `Successfully configured verification of inclusion in Merkle root "${selectedMerkleRoot}" to be assigned role "${selectedRole.name}."`
-
     if (existingConnection) {
       successMessage = successMessage.concat(
         `\n\n(P.S. we had to replace an existing configuration. For now we only allow 1 configuration per server.)`
       )
     }
-    await interaction.reply({
+    await interaction.editReply({
       content: successMessage,
     })
   }
