@@ -2,12 +2,11 @@
 <!doctype html>
 <html>
   </head>
-    <title>Hello, Snaps!</title>
-    <link rel="icon" type="image/svg" href="./images/icon.svg"/>
+    <title>Cabal Snap Local Testing</title>
   </head>
 
   <body>
-    <h1>Hello, Snaps!</h1>
+    <h1>Cabal Snap Local Testing</h1>
     <details>
       <summary>Instructions</summary>
       <ul>
@@ -15,7 +14,7 @@
         <li>Please note that:</li>
         <ul>
           <li>
-            The <code>snap.manifest.json</code> and <code>package.json</code> must be located in located in the server root directory..
+            The <code>snap.manifest.json</code> and <code>package.json</code> must be located in located in the server root directory.
           </li>
           <li>
             The Snap bundle must be hosted at the location specified by the <code>location</code> field of <code>snap.manifest.json</code>.
@@ -26,17 +25,28 @@
     <br/>
 
     <button class="connect">Connect</button>
-    <button class="sendHello">Send Hello</button>
+    <button class="getMerkleProof">Get Merkle Proof</button>
+    <button class="generateProof">Generate Proof</button>
   </body>
 
   <script>
-    const snapId = 'npm:cabal-xyz-snap'
+    // cd ../rootgen
+    // add your address to data/test_addrs.json
+    // yarn build
+    // cp output/tree.json ../snap/
+    const merkleTreePath = './tree.json';
+
+    const snapId = `local:${window.location.href}`;
+  
+    let merkleProof = null;
 
     const connectButton = document.querySelector('button.connect')
-    const sendButton = document.querySelector('button.sendHello')
+    const getMerkleProofButton = document.querySelector('button.getMerkleProof')
+    const generateButton = document.querySelector('button.generateProof')
 
     connectButton.addEventListener('click', connect)
-    sendButton.addEventListener('click', send)
+    generateButton.addEventListener('click', generate)
+    getMerkleProofButton.addEventListener('click', getMerkleProof)
 
     // here we get permissions to interact with and install the snap
     async function connect () {
@@ -52,41 +62,37 @@
       console.log(result);
     }
 
+    // have to call this before calling generate
+    async function getMerkleProof () {
+      await ethereum.send('eth_requestAccounts', [])
+      const address = ethereum.selectedAddress;
+      console.log(`address: ${address}`);
+
+      const res = await fetch(merkleTreePath);
+      const merkleProofData = await res.json();
+      merkleProof = {
+        merkleRoot: merkleProofData.root,
+        merklePathElements:
+          merkleProofData.leafToPathElements[BigInt(address).toString()],
+        merklePathIndices:
+          merkleProofData.leafToPathIndices[BigInt(address).toString()],
+      };
+      console.log(merkleProof);
+    }
+
     // here we call the snap's "generateProof" method
-    async function send () {
+    async function generate () {
       try {
-        console.log('trying');
+        if (!merkleProof) {
+          alert('Please click "Get Merkle Proof" button first!');
+        }
+
+        console.log('start generating proof...');
         const response = await ethereum.request({
           method: 'wallet_invokeSnap',
           params: [snapId, {
             method: 'generateProof',
-            account: 1, // NOTE: need to pass account in!
-
-            merkleRoot: '7713121316911589882912450866616190958431160115596168939556116455511050242964',
-            merklePathElements: [
-                "456288420540366271699073320526250777399876523005",
-                "4059543558338950962210203734932583800516147873562534526048376918852415357306",
-                "21801095438324507805011374753093002398306580563824252691427495998928017917627",
-                "12191774681524619819039645666575166449614104052373366045159938003710674353088",
-                "15603733925822440165057839836019555846341278352208443574531375163833060832828",
-                "868227038006217426073823056827096090829717711219495906192776865198201881326",
-                "13799897647416390228372186024376520670430325579239330308125856047023552155261",
-                "9943017422079793097231424767472304271616018986749218212195567265357715433556",
-                "6114438682716931917035775303229332200710133295702254706479213735533341333686",
-                "3672123210314631796086215546541299386001154027477140848215731158708032014787"
-            ],
-            merklePathIndices: [
-                0,
-                1,
-                0,
-                1,
-                0,
-                1,
-                0,
-                0,
-                0,
-                1
-            ]
+            ...merkleProof
           }]
         })
 
