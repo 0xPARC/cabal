@@ -7,7 +7,11 @@ import {
   Intents,
   Message,
   IntegrationApplication,
+  TextBasedChannel,
   TextChannel,
+  InteractionCollector,
+  Interaction,
+  CommandInteraction,
 } from 'discord.js'
 
 import { PrismaClient } from '@prisma/client'
@@ -26,13 +30,12 @@ const prisma = new PrismaClient()
 
 // TODO read this from a .env file, for local dev can make it localhost:3000
 const HOSTNAME = 'cabal.xyz'
+const VERIFY_CHANNEL_NAME = 'cabal-verify'
+const CONFIGURE_CHANNEL_NAME = 'cabal-configure'
+const GUILD_TEST_COMMAND_PREFIX = 'guild-test-command-' // Make sure this is synced with deploy.ts
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}!`)
-})
-
-client.on('debug', async (message) => {
-  console.log('Debug info', message)
 })
 
 client.on('error', async (error) => {
@@ -49,33 +52,37 @@ client.on('guildIntegrationsUpdate', async (guild) => {
  */
 client.on('guildCreate', async (guild) => {
   console.log('guildCreate', guild.id, guild.name)
-  const createdChannel = await guild.channels.create('cabal-verify', {
+  // TODO only create these channels if they don't exist
+  const createdChannel = await guild.channels.create(VERIFY_CHANNEL_NAME, {
     reason: 'A channel where users can get verified with cabal.',
     topic:
       'A channel where users can get verified with cabal. Type /verify (slash-command) to get started!',
   })
   if (createdChannel.type == 'GUILD_TEXT') {
     createdChannel as TextChannel
-    await createdChannel.send('Type /verify (slash-command) to get started!')
+    await createdChannel.send('Type /verify to get started!')
   }
-  const configureChannel = await guild.channels.create('cabal-configure', {
+  const everyoneRole = guild.roles.everyone
+  const configureChannel = await guild.channels.create(CONFIGURE_CHANNEL_NAME, {
     reason: 'A channel where admins can configure the cabal-bot.',
     topic:
       'A channel where admins can configure the cabal-bot. Type /configure (slash-command) to get started!',
+    permissionOverwrites: [
+      {
+        type: 'role',
+        id: everyoneRole.id,
+        deny: ['VIEW_CHANNEL'],
+      },
+      {
+        type: 'role',
+        id: guild.me!.roles.botRole!.id,
+        allow: ['VIEW_CHANNEL'],
+      },
+    ],
   })
   if (configureChannel.type == 'GUILD_TEXT') {
     configureChannel as TextChannel
-    await configureChannel.send(
-      'Type /configure (slash-command) to get started!'
-    )
-    // TODO only allow for admins to view this channel
-    // const everyoneRole = guild.roles.everyone;
-    // await channel.overwritePermissions([
-    //   {type: 'member', id: message.author.id, allow: [Permissions.FLAGS.VIEW_CHANNEL]},
-    //   {type: 'member', id: client.user.id, allow: [Permissions.FLAGS.VIEW_CHANNEL]},
-    //   {type: 'role', id: everyoneRole.id, deny: [Permissions.FLAGS.VIEW_CHANNEL]},
-    // ]);
-    // https://discordjs.guide/popular-topics/permissions.html#checking-for-permissions
+    await configureChannel.send('Type /configure to get started!')
   }
   await prisma.guild.upsert({
     where: { guildId: guild.id },
@@ -87,22 +94,43 @@ client.on('guildCreate', async (guild) => {
   })
 })
 
+const interactionChannelMatches = async (
+  interaction: CommandInteraction,
+  name: string,
+  errorMessage: string
+) => {
+  if (
+    !interaction.channel ||
+    !('name' in interaction.channel) ||
+    interaction.channel.name !== name
+  ) {
+    await interaction.followUp({
+      content: errorMessage,
+      ephemeral: true,
+    })
+    return false
+  }
+  return true
+}
+
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isCommand()) return
 
-  if (interaction.commandName === 'verify') {
+  if (
+    interaction.commandName === 'verify' ||
+    interaction.commandName === `${GUILD_TEST_COMMAND_PREFIX}verify`
+  ) {
     await interaction.reply({
       ephemeral: true,
       content: 'Generating link...wait a few moments...',
     })
-    if (false) {
-      // interaction.channel?.name !== 'cabal-join') {
-      // await interaction.reply({
-      //   content: 'Go to the cabal-join channel and type /verify again.',
-      //   ephemeral: true,
-      // })
-      // return
-    }
+
+    const channelNameMatches = await interactionChannelMatches(
+      interaction,
+      VERIFY_CHANNEL_NAME,
+      `ERROR: This command only runs in the ${VERIFY_CHANNEL_NAME} channel. Go to the ${VERIFY_CHANNEL_NAME} channel and type /verify again.`
+    )
+    if (!channelNameMatches) return
 
     if (!interaction.guild || !interaction.member) {
       await interaction.followUp({
@@ -124,6 +152,7 @@ client.on('interactionCreate', async (interaction) => {
       })
       return
     }
+
     const validConnections = guild.configuredConnections.filter(
       (c) => !c.deleted
     )
@@ -206,15 +235,36 @@ client.on('interactionCreate', async (interaction) => {
     }
     await assignRole(configuredConnection)
     */
-  } else if (interaction.commandName === 'configure') {
-    await interaction.reply('Working on configuration.')
+  } else if (
+    interaction.commandName === 'configure' ||
+    interaction.commandName === `${GUILD_TEST_COMMAND_PREFIX}configure`
+  ) {
+    console.log('Recieved configuration request')
+    await interaction.reply({
+      ephemeral: true,
+      content: 'Configuration request recieved! Working on it...',
+    })
 
-    console.log('Start of configuration  method')
-    // TODO only make this work in the cabal-configure channel & only for admins
+    if (!interaction.memberPermissions?.has('ADMINISTRATOR')) {
+      await interaction.followUp({
+        content:
+          'ERROR: You can only run this command if you are an administrator of the server!',
+        ephemeral: true,
+      })
+      return
+    }
+
+    const channelNameMatches = await interactionChannelMatches(
+      interaction,
+      CONFIGURE_CHANNEL_NAME,
+      `ERROR: This command only runs in the ${CONFIGURE_CHANNEL_NAME} channel. Go to the ${CONFIGURE_CHANNEL_NAME} channel and type /configure again.`
+    )
+    if (!channelNameMatches) return
+
     if (!interaction.guild || !interaction.member) {
-      await interaction.editReply(
-        'There was an error in retrieving the server or member.'
-      )
+      await interaction.followUp({
+        content: 'There was an error in retrieving the server or member.',
+      })
       return
     }
     /*
@@ -227,9 +277,9 @@ client.on('interactionCreate', async (interaction) => {
       ?.value as string
     const selectedRole = interaction.options.get('verified_role')?.role
     if (!selectedMerkleRoot || !selectedRole) {
-      await interaction.editReply(
-        'An invalid merkle root or role was provided!'
-      )
+      await interaction.followUp({
+        content: 'An invalid merkle root or role was provided!',
+      })
       return
     }
 
@@ -270,13 +320,14 @@ client.on('interactionCreate', async (interaction) => {
         prettyName: '',
       },
     })
+
     let successMessage = `Successfully configured verification of inclusion in Merkle root "${selectedMerkleRoot}" to be assigned role "${selectedRole.name}."`
     if (existingConnection) {
       successMessage = successMessage.concat(
         `\n\n(P.S. we had to replace an existing configuration. For now we only allow 1 configuration per server.)`
       )
     }
-    await interaction.editReply({
+    await interaction.followUp({
       content: successMessage,
     })
   }

@@ -4,15 +4,12 @@
     "target": "es6",
     "rootDir": "./",
     "esModuleInterop": true,
-    // "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    // "esModuleInterop": true,
-    // "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -22,5 +19,5 @@
   },
   "include": [],
   "exclude": ["node_modules"],
-  "files": ["bot.ts"]
+  "files": ["bot.ts", "deploy.ts"]
 }
