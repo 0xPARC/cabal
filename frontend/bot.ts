@@ -7,6 +7,7 @@ import {
   Intents,
   Message,
   IntegrationApplication,
+  TextChannel,
 } from 'discord.js'
 
 import { PrismaClient } from '@prisma/client'
@@ -23,23 +24,67 @@ const client = new Client({
 })
 const prisma = new PrismaClient()
 
+// TODO read this from a .env file, for local dev can make it localhost:3000
 const HOSTNAME = 'cabal.xyz'
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}!`)
 })
 
+client.on('debug', async (message) => {
+  console.log('Debug info', message)
+})
+
+client.on('error', async (error) => {
+  console.log('Error info', error)
+})
+
+client.on('guildIntegrationsUpdate', async (guild) => {
+  console.log('guildIntegrationsUpdate event', guild.id, guild.name)
+})
+/**
+ * This event is triggered when the bot is added to a new server. It creates a
+ * cabal-configure channel that admins can use to configure the bot and a
+ * cabal-verify channel where users go to get verified with cabal.
+ */
 client.on('guildCreate', async (guild) => {
-  console.log(guild)
-  // if (!guild.available()) return
-  const createdChannel = await guild.channels.create('cabal-join', {
+  console.log('guildCreate', guild.id, guild.name)
+  const createdChannel = await guild.channels.create('cabal-verify', {
     reason: 'A channel where users can get verified with cabal.',
+    topic:
+      'A channel where users can get verified with cabal. Type /verify (slash-command) to get started!',
   })
-  // await createdChannel.send('Type /verify (slash-command) to get started!')
+  if (createdChannel.type == 'GUILD_TEXT') {
+    createdChannel as TextChannel
+    await createdChannel.send('Type /verify (slash-command) to get started!')
+  }
   const configureChannel = await guild.channels.create('cabal-configure', {
-    reason: 'A channel where the admins can configure the cabal-bot.',
+    reason: 'A channel where admins can configure the cabal-bot.',
+    topic:
+      'A channel where admins can configure the cabal-bot. Type /configure (slash-command) to get started!',
   })
-  // await configureChannel.send('Type /configure (slash-command) to get started!')
+  if (configureChannel.type == 'GUILD_TEXT') {
+    configureChannel as TextChannel
+    await configureChannel.send(
+      'Type /configure (slash-command) to get started!'
+    )
+    // TODO only allow for admins to view this channel
+    // const everyoneRole = guild.roles.everyone;
+    // await channel.overwritePermissions([
+    //   {type: 'member', id: message.author.id, allow: [Permissions.FLAGS.VIEW_CHANNEL]},
+    //   {type: 'member', id: client.user.id, allow: [Permissions.FLAGS.VIEW_CHANNEL]},
+    //   {type: 'role', id: everyoneRole.id, deny: [Permissions.FLAGS.VIEW_CHANNEL]},
+    // ]);
+    // https://discordjs.guide/popular-topics/permissions.html#checking-for-permissions
+  }
+  await prisma.guild.upsert({
+    where: { guildId: guild.id },
+    update: { guildName: guild.name },
+    create: {
+      guildId: guild.id,
+      guildName: guild.name,
+    },
+  })
 })
 
 client.on('interactionCreate', async (interaction) => {
