@@ -10,10 +10,22 @@ export const Wrapper = styled.div`
 export const Stepper = styled.div`
     background: #FCE9A6;
     color: black;
-    padding: 5px;
-    display: flex;
+    font-size: 16px;
+    padding: 5px 10px;
+    display: inline-flex;
+    margin: 0 5px;
+    position: relative;
     
-    &:before {
-        border: 1px solid #FCE9A6;
-    }
+    box-shadow: rgb(0, 0, 0) -5px 5px 0px -1px, #FCE9A6 -5px 5px;
+`
+
+export const Title = styled.h1`
+    font-size: 40px;
+`
+
+export const Button = styled.button`
+    font-size: 16px;
+    padding: 10px 15px;
+    background: #fff;
+    color: black;
 `
