@@ -11,26 +11,15 @@ import {
   ConfiguredConnection,
   AuthToken,
 } from '@prisma/client/index'
-import {
-  MessageActionRow,
-  MessageButton,
-  MessageEmbed,
-  Client,
-  Intents,
-  Message,
-  IntegrationApplication,
-} from 'discord.js'
+import { Client, Intents } from 'discord.js'
 import 'dotenv/config'
-import fs from 'fs'
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] })
 client.login(process.env.DISCORD_TOKEN)
 const prisma = new PrismaClient()
 
-let clientReady = false
 client.on('ready', () => {
   console.log(`Logged in as ${client.user?.tag}!`)
-  clientReady = true
 })
 
 export type MerkleProof = {
@@ -73,11 +62,18 @@ export default async function handler(
   // This is for POST (i.e. uploading proof for authToken)
   if (req.method === 'POST') {
     console.log(req.body) // This is JSON
+    const snarkProof = req.body.proof
+    const publicSignals = req.body.publicSignals
+    const publicSignalMerkleRoot = publicSignals[1]
+    const nullifier = publicSignals[0]
+
     const proof = await prisma.proof.create({
       data: {
         status: 'test_proof',
         proof: JSON.stringify(req.body),
         authTokenString: authTokenString,
+        nullifier: req.body.publicSignals[0],
+        configuredConnectionId: authToken.configuredConnectionId,
       },
     })
 
@@ -101,19 +97,40 @@ export default async function handler(
     )
 
     if (proofVerified) {
-      // discord add role
-      const guildId = authToken.configuredConnection.guildId
-      const guild = await client.guilds.fetch(guildId)
-      if (!guild) {
-        return
+      let error = ''
+      if (
+        publicSignalMerkleRoot !== authToken.configuredConnection.merkleRoot
+      ) {
+        error =
+          'Merkle root in public signals does not match authToken merkle root.'
       }
-      const userId = authToken.user.userId
-      const member = await guild.members.fetch(userId)
-      if (!member) {
-        return
+      // Check for nullifier not being used before
+      const configuredConnectionId = authToken.configuredConnectionId
+      const existingNullifier = await prisma.configuredConnection.findMany({
+        where: {
+          id: configuredConnectionId,
+        },
+        select: { proofs: { where: { nullifier: nullifier } } },
+      })
+      if (existingNullifier) {
+        error = 'Nullifier already exists ...'
       }
-      const roleId = authToken.configuredConnection.roleId
-      await member.roles.add([roleId])
+      if (!error) {
+        // discord add role
+        const guildId = authToken.configuredConnection.guildId
+        const guild = await client.guilds.fetch(guildId)
+        if (!guild) {
+          return
+        }
+        const userId = authToken.user.userId
+        const member = await guild.members.fetch(userId)
+        if (!member) {
+          return
+        }
+        const roleId = authToken.configuredConnection.roleId
+        await member.roles.add([roleId])
+      }
+
       res.status(200).send('Valid proof!')
       return
     } else {
