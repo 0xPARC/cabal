@@ -43,6 +43,7 @@ model ConfiguredConnection {
   prettyName String
   authTokens AuthToken[]
   deleted Boolean @default(false)
+  proofs Proof[]
 }
 
 model AuthToken {
@@ -57,8 +58,12 @@ model AuthToken {
 
 model Proof {
   id      Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
   status String
   proof String
+  nullifier String
   authToken AuthToken @relation(fields: [authTokenString], references: [authTokenString])
   authTokenString String
+  configuredConnection ConfiguredConnection @relation(fields: [configuredConnectionId], references: [id])
+  configuredConnectionId Int // relation scalar field, used in @relation above
 }
