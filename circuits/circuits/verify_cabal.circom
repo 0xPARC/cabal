@@ -28,7 +28,8 @@ template VerifyCabal(n, k, levels) {
 
   signal input merklePathElements[levels];
   signal input merklePathIndices[levels];
-  signal input merkleRoot; // of eth addresses
+
+  signal output merkleRoot; // of eth addresses
 
   // NOTE: chunked into k n-bit registers for easy use by ECDSAPrivToPub
   signal chunkedPubkey[2][k];
@@ -45,11 +46,11 @@ template VerifyCabal(n, k, levels) {
   // merkle verify of address
   component treeChecker = MerkleTreeChecker(levels);
   treeChecker.leaf <== address;
-  treeChecker.root <== merkleRoot;
   for (var i = 0; i < levels; i++) {
     treeChecker.pathElements[i] <== merklePathElements[i];
     treeChecker.pathIndices[i] <== merklePathIndices[i];
   }
+  merkleRoot <== treeChecker.root;
 
   // nullifier check
   component nullifierCheck = Poseidon(1);
