@@ -1,3 +1,10 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    background: black;
+    font-family: "Space Mono";
+    color: white;
+    font-size: 14px;
+}
