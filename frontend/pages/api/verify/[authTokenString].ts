@@ -39,6 +39,11 @@ type Error = {
   error: string
 }
 
+export type ProofSubmissionResult = {
+  error: string
+  proofStatus: boolean
+}
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Data | Error | string>
@@ -95,14 +100,14 @@ export default async function handler(
       req.body.publicSignals,
       req.body.proof
     )
+    let error = ''
 
     if (proofVerified) {
-      let error = ''
       if (
         publicSignalMerkleRoot !== authToken.configuredConnection.merkleRoot
       ) {
         error =
-          'Merkle root in public signals does not match authToken merkle root.'
+          'Merkle root in public signals of proof does not match authToken merkle root.'
       }
       // Check for nullifier not being used before
       const configuredConnectionId = authToken.configuredConnectionId
@@ -113,7 +118,7 @@ export default async function handler(
         select: { proofs: { where: { nullifier: nullifier } } },
       })
       if (existingNullifier) {
-        error = 'Nullifier already exists ...'
+        error = 'Nullifier already exists.'
       }
       if (!error) {
         // discord add role
@@ -130,12 +135,14 @@ export default async function handler(
         const roleId = authToken.configuredConnection.roleId
         await member.roles.add([roleId])
       }
-
-      res.status(200).send('Valid proof!')
-      return
-    } else {
-      res.status(200).send('Invalid proof!')
     }
+
+    const proofSubmissionResult = {
+      proofStatus: proofVerified,
+      error: error,
+    }
+
+    res.status(200).json(proofSubmissionResult)
   }
 
   // This is for GET

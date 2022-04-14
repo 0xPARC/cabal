@@ -1,7 +1,11 @@
 import { useRouter } from 'next/router'
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
-import { Data, MerkleProof } from '../api/verify/[authTokenString]'
+import {
+  Data,
+  MerkleProof,
+  ProofSubmissionResult,
+} from '../api/verify/[authTokenString]'
 import Head from 'next/head'
 import { Profile } from '@ensdomains/thorin'
 
@@ -19,7 +23,7 @@ const AuthToken = () => {
   const [proof, setProof] = useState<string | null>(null)
   const [proofLoading, setProofLoading] = useState<boolean>(false)
   const [submittedProof, setSubmittedProof] = useState<boolean>(false)
-  const [proofValid, setProofValid] = useState<boolean | null>(null)
+  const [proofValid, setProofValid] = useState<string | null>(null)
   const [textCounter, setTextCounter] = useState<number>(0)
   const [loadingText, setLoadingText] = useState<string>('')
   const [loadingVerified, setLoadingVerified] = useState<boolean>(false)
@@ -165,11 +169,23 @@ const AuthToken = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(proof),
       })
-        .then((res) => res.text())
-        .then((text) => {
+        .then((res) => res.json())
+        .then((proofSubmissionResult: ProofSubmissionResult) => {
           setLoadingVerified(false)
-          if (text == 'Valid proof!') setProofValid(true)
-          else setProofValid(false)
+          if (
+            // proof is valid and the error is ''
+            proofSubmissionResult.proofStatus &&
+            proofSubmissionResult.error === ''
+          )
+            setProofValid('true')
+          else {
+            const validity = proofSubmissionResult.proofStatus
+              ? 'valid'
+              : 'invalid'
+            setProofValid(
+              `Your proof was ${validity} but there was an error: ${proofSubmissionResult.error}.`
+            )
+          }
         })
     }
     submitData()
@@ -341,17 +357,14 @@ const AuthToken = () => {
             {address && proof && proofValid === null && loadingVerified && (
               <div className="">Server is verifying proof...</div>
             )}
-            {address && proof && proofValid !== null && proofValid && (
+            {address && proof && proofValid !== null && proofValid === 'true' && (
               <div className="">
                 <div>Your proof was verified. Please go back to discord!</div>
               </div>
             )}
-            {address && proof && proofValid !== null && !proofValid && (
+            {address && proof && proofValid !== null && proofValid !== 'true' && (
               <div className="">
-                <div>
-                  The server COULD NOT verify this proof. Are you doing
-                  something sneaky?
-                </div>
+                <div>{proofValid}</div>
               </div>
             )}
           </div>
