@@ -18,13 +18,13 @@ async function testLeaves(circuit, leaves, depth) {
     let witness = await circuit.calculateWitness(
       {
         leaf: leaf,
-        root: root,
         pathElements: leafToPathElements[leaf],
         pathIndices: leafToPathIndices[leaf]
       },
       true
     );
 
+    await circuit.assertOut(witness, {root: root});
     await circuit.checkConstraints(witness);
   }
 }
