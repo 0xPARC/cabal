@@ -42,7 +42,6 @@ wallet.registerRpcMessageHandler(async (originString, requestObject) => {
         privkey: privkeyTuple,
         nullifier: nullifier,
 
-        merkleRoot: requestObject.merkleRoot,
         merklePathElements: requestObject.merklePathElements,
         merklePathIndices: requestObject.merklePathIndices,
       };

@@ -127,7 +127,7 @@ const AuthToken = () => {
             snapId,
             {
               method: 'generateProof',
-              merkleRoot: data.configuredConnection.merkleRoot,
+
               merklePathIndices: merkleProof.merklePathIndices,
               merklePathElements: merkleProof.merklePathElements,
             },
