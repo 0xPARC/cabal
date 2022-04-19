@@ -24,15 +24,8 @@ if (args[0] === 'json') {
 } else {
   // gen tree for each devcon csv
   for (let i=1; i<=5; i++) {
-    let addresses = await getDevconAddresses('./data', i);
+    // NOTE: currently adds tester addresses by default
+    let addresses = await getDevconAddresses('./data', i, false);
     await genAndWriteTree(addresses, `output/tree${i}.json`);
   }
 }
-
-let sampleInput = buildSampleInput();
-writeFileSync('output/sample_input.json', JSON.stringify(
-  sampleInput,
-  (k, v) =>  typeof v == 'bigint' ? v.toString() : v,
-    2
-));
-
