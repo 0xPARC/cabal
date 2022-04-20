@@ -32,7 +32,6 @@ export type Data = {
   guild: Guild
   role: Role
   user: User
-  merkleProofsByAddr: Record<string, MerkleProof>
 }
 
 type Error = {
@@ -72,16 +71,6 @@ export default async function handler(
     const publicSignalMerkleRoot = publicSignals[1]
     const nullifier = publicSignals[0]
 
-    const proof = await prisma.proof.create({
-      data: {
-        status: 'test_proof',
-        proof: JSON.stringify(req.body),
-        authTokenString: authTokenString,
-        nullifier: req.body.publicSignals[0],
-        configuredConnectionId: authToken.configuredConnectionId,
-      },
-    })
-
     console.log(req.body)
     console.log(req.body.proof)
     console.log(req.body.publicSignals)
@@ -103,6 +92,7 @@ export default async function handler(
     let error = ''
 
     if (proofVerified) {
+      console.log('proof verified')
       if (
         publicSignalMerkleRoot !== authToken.configuredConnection.merkleRoot
       ) {
@@ -117,7 +107,9 @@ export default async function handler(
         },
         select: { proofs: { where: { nullifier: nullifier } } },
       })
-      if (existingNullifier) {
+      console.log('existing nullifier')
+      console.log(existingNullifier)
+      if (existingNullifier[0].proofs.length > 0) {
         error = 'Nullifier already exists.'
       }
       if (!error) {
@@ -134,6 +126,16 @@ export default async function handler(
         }
         const roleId = authToken.configuredConnection.roleId
         await member.roles.add([roleId])
+        // Only create the proof if the discord role was created
+        const proof = await prisma.proof.create({
+          data: {
+            status: 'test_proof',
+            proof: JSON.stringify(req.body),
+            authTokenString: authTokenString,
+            nullifier: req.body.publicSignals[0],
+            configuredConnectionId: authToken.configuredConnectionId,
+          },
+        })
       }
     }
 
@@ -143,6 +145,7 @@ export default async function handler(
     }
 
     res.status(200).json(proofSubmissionResult)
+    return
   }
 
   // This is for GET
@@ -162,15 +165,6 @@ export default async function handler(
     role: role,
     guild: guild,
     user: authToken.user,
-    merkleProofsByAddr: {
-      '0x3Af621b0a91F667B38A652Aff8B5d5c9855dD737': {
-        merklePathElements: [
-          '0x35f3d53b4fe1cbE59810687BB2b0795778d8605F',
-          '0x123d53b4fe1cbE59810687BB2b0795778d8605F',
-        ],
-        merklePathIndices: [0, 1, 0],
-      },
-    },
   })
 }
 
