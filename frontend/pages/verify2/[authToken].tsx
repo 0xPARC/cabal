@@ -16,6 +16,7 @@ import InfoRow from '../../components/InfoRow'
 import ProofButton from '../../components/ProofButton'
 import SubmitButton from '../../components/SubmitButton'
 import Slideover from '../../components/Slideover'
+import LoadingText from '../../components/LoadingText'
 import dynamic from 'next/dynamic'
 const DynamicReactJson = dynamic(import('react-json-view'), { ssr: false })
 
@@ -50,6 +51,11 @@ export type ProofVerifiedInfo = {
   proofValid: boolean | null
   error: string
   loading: boolean
+}
+
+function truncateString(s: string, maxLength: number = 25) {
+  if (s.length <= maxLength) return s
+  return s.substring(0, maxLength - 3) + '...'
 }
 
 const getTitleTextProofVerificationStep = (
@@ -105,35 +111,6 @@ const AuthToken = () => {
     fetchData()
   }, [authToken])
 
-  // function truncateString(s: string, maxLength: number = 25) {
-  //   if (s.length <= maxLength) return s
-  //   return s.substring(0, maxLength - 3) + '...'
-  // }
-  // const answers = [
-  //   'Running magic moon math in the browser',
-  //   "Vitalik probably thinks you're cool for generating a ZK proof",
-  //   'Welcome to the future of b l o c k c h a i n',
-  //   "Pop quiz: what's the difference between the ate, tate pairing?",
-  //   'Bonus question: are ate, kate, and tate related?',
-  //   "If you think this is slow, why don't you try solving y^2=x^2+Ax^2+x yourself?",
-  //   '👻👻👻👻👻👻',
-  //   'Running automated venture capitalist detection...',
-  // ]
-
-  // useEffect(() => {
-  //   if (!proofLoading) return
-  //   setLoadingText(answers[textCounter % answers.length])
-  // }, [textCounter, proofLoading])
-
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     setTextCounter((prevCount) => prevCount + 1) // <-- Change this line!
-  //   }, 5000)
-  //   return () => {
-  //     clearInterval(timer)
-  //   }
-  // }, []) // Pass in empty array to run effect only once!
-
   const connectToMetamask = () => {
     const connectToMetamaskAsync = async () => {
       const { provider, signer, network } = await setupWeb3()
@@ -152,12 +129,12 @@ const AuthToken = () => {
   }
 
   return (
-    <div>
+    <div className="h-screen">
       <Head>
         <title>verify cabal.xyz</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="h-full bg-black p-20 text-white">
+      <div className="flex h-full items-center justify-center bg-black p-20 text-white	">
         {/* <button onClick={() => setSlideoverOpen(true)}>Test Button</button> */}
         <Slideover
           open={slideoverOpen}
@@ -174,109 +151,121 @@ const AuthToken = () => {
             />
           )}
         </Slideover>
-        <Stepper>ZK Verification STEP {step}/4</Stepper>
-        {step < 4 && <Title> {TITLES[step - 1]} </Title>}
-        {step === 4 && proofVerifiedInfo && (
-          <Title>{getTitleTextProofVerificationStep(proofVerifiedInfo)}</Title>
-        )}
-        <div className="m-10">
-          {!authTokenData && (
-            <InfoRow name="Loading" content="..." color="text-yellow-500" />
+        {/* <div>Spacer</div> */}
+        <div className="items-center justify-center	self-center">
+          <Stepper>ZK Verification STEP {step}/4</Stepper>
+          {step < 4 && <Title> {TITLES[step - 1]} </Title>}
+          {step === 4 && proofVerifiedInfo && (
+            <Title>
+              {getTitleTextProofVerificationStep(proofVerifiedInfo)}
+            </Title>
           )}
-          {authTokenData && (
-            <div>
-              <InfoRow name="Username" content={authTokenData?.user.userName} />
-              <InfoRow
-                name="Server Name"
-                content={authTokenData?.guild.guildName}
-              />
-              <InfoRow name="Role" content={authTokenData?.role.roleName} />
-
-              <InfoRow
-                name="Merkle Root"
-                content={
-                  <Tooltip
-                    text={authTokenData?.configuredConnection.merkleRoot}
-                  />
-                }
-              />
-            </div>
-          )}
-          {step >= 2 &&
-            metamaskAddress && ( // If step >= 2, then metamask Address is defined
+          <div className="m-10">
+            {!authTokenData && (
+              <InfoRow name="Loading" content="..." color="text-yellow-500" />
+            )}
+            {authTokenData && (
               <div>
-                <InfoRow name="Address" content={metamaskAddress} />
-                {merkleProofLoading && (
+                <InfoRow
+                  name="Username"
+                  content={authTokenData?.user.userName}
+                />
+                <InfoRow
+                  name="Server Name"
+                  content={authTokenData?.guild.guildName}
+                />
+                <InfoRow name="Role" content={authTokenData?.role.roleName} />
+
+                <InfoRow
+                  name="Merkle Root"
+                  content={
+                    <Tooltip
+                      text={authTokenData?.configuredConnection.merkleRoot}
+                    />
+                  }
+                />
+              </div>
+            )}
+            {step >= 2 &&
+              metamaskAddress && ( // If step >= 2, then metamask Address is defined
+                <div>
+                  <InfoRow name="Address" content={metamaskAddress} />
+                  {merkleProofLoading && (
+                    <InfoRow
+                      name="Loading"
+                      content="Merkle Proof Computing"
+                      color="text-yellow-500"
+                    />
+                  )}
+                  {merkleProofError && (
+                    <InfoRow
+                      name="Error"
+                      content={merkleProofError}
+                      color="text-red-500"
+                    />
+                  )}
+                  {merkleProof && (
+                    <InfoRow
+                      name="Merkle Proof"
+                      content={
+                        <span
+                          onClick={() =>
+                            openSlideOver(merkleProof, 'Merkle Proof')
+                          }
+                          className="hover:cursor-pointer hover:text-terminal-green"
+                        >
+                          Click to view
+                          {/* {JSON.stringify(merkleProof)} */}
+                        </span>
+                      }
+                    />
+                  )}
+                </div>
+              )}
+            {step >= 3 && (
+              <div>
+                {zkProofInfo.zkProof && (
                   <InfoRow
-                    name="Loading"
-                    content="Merkle Proof Computing"
-                    color="text-yellow-500"
-                  />
-                )}
-                {merkleProofError && (
-                  <InfoRow
-                    name="Error"
-                    content={merkleProofError}
-                    color="text-red-500"
-                  />
-                )}
-                {merkleProof && (
-                  <InfoRow
-                    name="Merkle Proof"
+                    name="ZK Proof"
                     content={
                       <span
                         onClick={() =>
-                          openSlideOver(merkleProof, 'Merkle Proof')
+                          openSlideOver(zkProofInfo.zkProof, 'ZK Proof')
                         }
+                        className="hover:cursor-pointer hover:text-terminal-green"
                       >
-                        {JSON.stringify(merkleProof)}
+                        {/* {JSON.stringify(zkProofInfo.zkProof)} */}
+                        Click to view
                       </span>
                     }
                   />
                 )}
+                {zkProofInfo.error && (
+                  <InfoRow
+                    name="Error"
+                    content={zkProofInfo.error}
+                    color="text-red-500"
+                  />
+                )}
               </div>
             )}
+          </div>
+          {step === 1 && <Button onClick={connectToMetamask}>Connect</Button>}
+          {step === 2 && (
+            <ProofButton
+              updateParent={setZkProofInfo}
+              merkleRoot={authTokenData?.configuredConnection.merkleRoot || ''}
+              merkleProof={merkleProof}
+            />
+          )}
           {step >= 3 && (
-            <div>
-              {zkProofInfo.zkProof && (
-                <InfoRow
-                  name="ZK Proof"
-                  content={
-                    <span
-                      onClick={() =>
-                        openSlideOver(zkProofInfo.zkProof, 'ZK Proof')
-                      }
-                    >
-                      {JSON.stringify(zkProofInfo.zkProof)}
-                    </span>
-                  }
-                />
-              )}
-              {zkProofInfo.error && (
-                <InfoRow
-                  name="Error"
-                  content={zkProofInfo.error}
-                  color="text-red-500"
-                />
-              )}
-            </div>
+            <SubmitButton
+              updateParent={setProofVerifiedInfo}
+              zkProof={zkProofInfo.zkProof}
+              authToken={authToken as string}
+            />
           )}
         </div>
-        {step === 1 && <Button onClick={connectToMetamask}>Connect</Button>}
-        {step === 2 && (
-          <ProofButton
-            updateParent={setZkProofInfo}
-            merkleRoot={authTokenData?.configuredConnection.merkleRoot || ''}
-            merkleProof={merkleProof}
-          />
-        )}
-        {step >= 3 && (
-          <SubmitButton
-            updateParent={setProofVerifiedInfo}
-            zkProof={zkProofInfo.zkProof}
-            authToken={authToken as string}
-          />
-        )}
       </div>
     </div>
   )

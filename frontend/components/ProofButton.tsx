@@ -2,6 +2,7 @@ import { useState, useEffect, SetStateAction, Dispatch } from 'react'
 import { Button } from './Base'
 import { MerkleProof } from '../pages/api/verify/[authTokenString]'
 import { ZKProofInfo } from '../pages/verify2/[authToken]'
+import LoadingText from './LoadingText'
 
 declare let window: any
 const snapId = 'npm:cabal-xyz-snap'
@@ -45,6 +46,8 @@ export default function ProofButton({
   const buttonText = loading ? 'Generating...' : 'Generate Proof'
 
   useEffect(() => {
+    console.log('Updating parent')
+    console.log(loading, zkProof, error)
     updateParent({ zkProof, error, loading })
   }, [loading, zkProof, error])
 
@@ -54,7 +57,9 @@ export default function ProofButton({
     if (!merkleProof) return
     // TODO include timeout here for proof generation
     const setup = await setupSnap()
+    console.log('before set loading')
     setLoading(true)
+    console.log('After set loading')
     try {
       console.log('Invoking snap method to generating the proof')
       await window.ethereum
@@ -93,5 +98,10 @@ export default function ProofButton({
 
   // TODO disable the button if !merkleProof, hover: "cannot generate proof with merkle proof"
   // TODO disable the button if proofLoading, hover: "proof is generating, be patient"
-  return <Button onClick={generateProof}>{buttonText}</Button>
+  return (
+    <div className="flex">
+      <Button onClick={generateProof}>{buttonText}</Button>
+      <div className="mx-10">{loading && <LoadingText />}</div>
+    </div>
+  )
 }
