@@ -163,11 +163,6 @@ client.on('interactionCreate', async (interaction) => {
           'There are no configured roles in this server. Ask your admin to set up one!',
       })
       return
-    } else if (validConnections.length == 1) {
-      await interaction.followUp({
-        ephemeral: true,
-        content:
-      })
     }
 
     if (validConnections.length > 1) {
