@@ -1,4 +1,4 @@
 module.exports = {
-    cliOptions: {},
-    bundlerCustomizer: (browserify) => browserify.addPlugin('brfs')
+  cliOptions: {},
+  bundlerCustomizer: (browserify) => browserify.transform('brfs')
 }
