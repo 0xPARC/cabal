@@ -7,7 +7,7 @@
     "url": "git@github.com:0xPARC/cabal.git"
   },
   "source": {
-    "shasum": "5DTP9SEVJSctPepqSaw0Is2ZpcWfEkgvIVmOaAa424A=",
+    "shasum": "PewEUgfqME70YMoABaI/nTW8Pir1TrotD2G9kniL71Y=",
     "location": {
       "npm": {
         "filePath": "dist/bundle.js",

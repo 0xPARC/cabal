@@ -2,7 +2,10 @@
 //import { deriveBIP44AddressKey } from "@metamask/key-tree";
 
 //import { generateProof } from "./snark_utils/generate_proof";
-import * as fs from 'fs';
+//import * as fs from 'fs';
+
+//import fs from 'fs';
+const fs = require('fs');
 
 // NOTE: re-use in a bunch of places
 // for converting privkey to 4-tuple
