@@ -1,5 +1,5 @@
 {
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Snap for cabal.xyz",
   "proposedName": "cabal-xyz-snap",
   "repository": {
