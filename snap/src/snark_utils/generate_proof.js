@@ -3,8 +3,10 @@
 import { groth16 } from "snarkjs";
 import builder from "./witness_calculator";
 
-const zkeyPath = "https://cabal.sfo3.digitaloceanspaces.com/verify_cabal_final.zkey";
-const wasmPath = "https://cabal.sfo3.digitaloceanspaces.com/verify_cabal.wasm";
+// const zkeyPath = "https://cabal.sfo3.digitaloceanspaces.com/verify_cabal_final.zkey";
+const zkeyPath = "https://cabal-amsterdam.ams3.digitaloceanspaces.com/verify_cabal_final.zkey";
+// const wasmPath = "https://cabal.sfo3.digitaloceanspaces.com/verify_cabal.wasm";
+const wasmPath = "https://cabal-amsterdam.ams3.digitaloceanspaces.com/verify_cabal_final.wasm";
 
 export const generateProof = async (input) => {
   const wtnsBuff = await generateWitness(input);
