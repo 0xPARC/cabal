@@ -1,7 +1,7 @@
 import { useState, useEffect, SetStateAction, Dispatch } from 'react'
 import { Button } from './Base'
 import { MerkleProof } from '../pages/api/verify/[authTokenString]'
-import { ZKProofInfo } from '../pages/verify2/[authToken]'
+import { ZKProofInfo } from '../pages/verify/[authToken]'
 import LoadingText from './LoadingText'
 
 declare let window: any
