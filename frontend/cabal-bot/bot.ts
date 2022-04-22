@@ -116,9 +116,59 @@ const interactionChannelMatches = async (
 client.on('interactionCreate', async (interaction) => {
   if (!interaction.isCommand()) return
 
+  if (interaction.commandName === 'test_role_setting') {
+    async function assignRole(
+      configuredConnection: ConfiguredConnection,
+      userId: string
+    ) {
+      console.log(
+        'trying to set role for configuredconnection',
+        configuredConnection
+      )
+      const guildId = configuredConnection.guildId
+      const guild = await client.guilds.fetch(guildId)
+      console.log('fetching guild')
+      if (!guild) {
+        return
+      }
+      const member = await guild.members.fetch(userId)
+      console.log('got member')
+      if (!member) {
+        return
+      }
+      const roleId = configuredConnection.roleId
+      console.log(roleId)
+      await member.roles.add([roleId])
+      console.log('done setting roleId')
+      return true
+    }
+    await interaction.reply({
+      ephemeral: true,
+      content: 'Checking role setting',
+    })
+
+    const guildId = interaction?.guild?.id
+    const guild = await prisma.guild.findUnique({
+      where: { guildId: guildId },
+      include: { configuredConnections: true },
+    })
+    const userId = interaction?.member?.user.id as string
+    if (!guild || !userId) return
+    await Promise.all(
+      guild.configuredConnections
+        .filter((cc) => !cc.deleted)
+        .map((cc) => {
+          return assignRole(cc, userId)
+        })
+    )
+    return
+  }
+
   if (
     interaction.commandName === 'verify' ||
-    interaction.commandName === `${GUILD_TEST_COMMAND_PREFIX}verify`
+    interaction.commandName === `${GUILD_TEST_COMMAND_PREFIX}verify` ||
+    interaction.commandName === 'verify-select' ||
+    interaction.commandName === `${GUILD_TEST_COMMAND_PREFIX}verify-select`
   ) {
     await interaction.reply({
       ephemeral: true,
@@ -156,6 +206,7 @@ client.on('interactionCreate', async (interaction) => {
     const validConnections = guild.configuredConnections.filter(
       (c) => !c.deleted
     )
+    let configuredConnection: ConfiguredConnection | null = null
     if (validConnections.length == 0) {
       await interaction.followUp({
         ephemeral: true,
@@ -163,18 +214,59 @@ client.on('interactionCreate', async (interaction) => {
           'There are no configured roles in this server. Ask your admin to set up one!',
       })
       return
+    } else if (validConnections.length == 1) {
+      // We ignore whichever merkle root we have selected
+      configuredConnection = validConnections[0]
+      if (
+        interaction.commandName === 'verify-select' ||
+        interaction.commandName === `${GUILD_TEST_COMMAND_PREFIX}verify-select`
+      ) {
+        const selectedRoot = interaction.options.get('merkle_root')
+          ?.value as string
+        if (configuredConnection.merkleRoot !== selectedRoot) {
+          await interaction.followUp({
+            ephemeral: true,
+            content: `Tried to select merkle root "${selectedRoot}", but the only valid configured roots are:\n>>>${configuredConnection.merkleRoot}`,
+          })
+          return
+        }
+      }
+    } else if (validConnections.length > 1) {
+      if (
+        interaction.commandName === 'verify' ||
+        interaction.commandName === `${GUILD_TEST_COMMAND_PREFIX}verify`
+      ) {
+        await interaction.followUp({
+          ephemeral: true,
+          content:
+            'There are multiple configured roles in this server. Please use the verify-select command.',
+        })
+        return
+      } else {
+        // This is the verify-select command
+        const merkleRoots = validConnections.map(
+          (configuredConnection) => configuredConnection.merkleRoot
+        )
+        const selectedRoot = interaction.options.get('merkle_root')
+          ?.value as string
+        if (selectedRoot && merkleRoots.includes(selectedRoot)) {
+          configuredConnection =
+            validConnections[merkleRoots.indexOf(selectedRoot)]
+        } else {
+          await interaction.followUp({
+            ephemeral: true,
+            content: `Tried to select merkle root ${selectedRoot}, but the only valid configured root is ${JSON.stringify(
+              merkleRoots
+            )}`,
+          })
+          return
+        }
+      }
     }
 
-    if (validConnections.length > 1) {
-      await interaction.followUp({
-        ephemeral: true,
-        content:
-          'There are multiple configured roles in this server. We do not support that for now',
-      })
-      return
+    if (!configuredConnection) {
+      throw "The configured connection is null, this shouldn't be happening"
     }
-
-    const configuredConnection = validConnections[0]
 
     const interactionUser = interaction.member.user
     const user = await prisma.user.upsert({
@@ -215,26 +307,6 @@ client.on('interactionCreate', async (interaction) => {
       embeds: [embed],
       components: [row],
     })
-
-    // This commented out code is for testing that the discord bot can set roles.
-    /*
-    async function assignRole(configuredConnection: ConfiguredConnection) {
-      const guildId = configuredConnection.guildId
-      const guild = await client.guilds.fetch(guildId)
-      if (!guild) {
-        return
-      }
-      const userId = user.userId
-      const member = await guild.members.fetch(userId)
-      if (!member) {
-        return
-      }
-      const roleId = configuredConnection.roleId
-      await member.roles.add([roleId])
-      console.log('done setting roleId')
-    }
-    await assignRole(configuredConnection)
-    */
   } else if (
     interaction.commandName === 'configure' ||
     interaction.commandName === `${GUILD_TEST_COMMAND_PREFIX}configure`
@@ -293,16 +365,19 @@ client.on('interactionCreate', async (interaction) => {
       include: { configuredConnections: true },
     })
 
+    const deleteExisting = false
     let existingConnection = false
 
-    if (guild.configuredConnections.length > 1) {
-      existingConnection = true
-      // Delete all the existing ones, since we only allow 1
-      for (let i = 0; i < guild.configuredConnections.length; i++) {
-        await prisma.configuredConnection.update({
-          where: { id: guild.configuredConnections[i].id },
-          data: { deleted: true },
-        })
+    if (deleteExisting) {
+      if (guild.configuredConnections.length > 1) {
+        existingConnection = true
+        // Delete all the existing ones, since we only allow 1
+        for (let i = 0; i < guild.configuredConnections.length; i++) {
+          await prisma.configuredConnection.update({
+            where: { id: guild.configuredConnections[i].id },
+            data: { deleted: true },
+          })
+        }
       }
     }
 
@@ -327,6 +402,13 @@ client.on('interactionCreate', async (interaction) => {
         `\n\n(P.S. we had to replace an existing configuration. For now we only allow 1 configuration per server.)`
       )
     }
+    const existingRoots = guild.configuredConnections
+      .filter((cc) => !cc.deleted)
+      .map((cc) => cc.merkleRoot)
+    existingRoots.push(selectedMerkleRoot)
+    successMessage = successMessage.concat(
+      `\n>>>The current available roots are \n${JSON.stringify(existingRoots)}`
+    )
     await interaction.followUp({
       content: successMessage,
     })

@@ -55,11 +55,24 @@ let commandNamePrefix = ''
 if (guildId !== GLOBAL_DEFAULT) {
   commandNamePrefix = GUILD_TEST_COMMAND_PREFIX
 }
-const commands = [
+const commandsRaw = [
   new SlashCommandBuilder()
     .setName(`${commandNamePrefix}verify`)
     .setDescription(
       'Responds with a verification link! Only will work when called in cabal-verify channel.'
+    ),
+  new SlashCommandBuilder()
+    .setName(`${commandNamePrefix}verify-select`)
+    .setDescription(
+      'Responds with a verification link for specific merkle root!'
+    )
+    .addStringOption((option) =>
+      option
+        .setName('merkle_root')
+        .setDescription(
+          'Which merkle root you want to generate a verification for.'
+        )
+        .setRequired(true)
     ),
   new SlashCommandBuilder()
     .setName(`${commandNamePrefix}configure`)
@@ -80,7 +93,17 @@ const commands = [
         .setDescription('What role the user recieves upon verification')
         .setRequired(true)
     ),
-].map((command) => command.toJSON())
+]
+
+if (guildId !== GLOBAL_DEFAULT) {
+  commandsRaw.push(
+    new SlashCommandBuilder()
+      .setName('test_role_setting')
+      .setDescription('Tests that the discord bot can set roles')
+  )
+}
+
+const commands = commandsRaw.map((command) => command.toJSON())
 
 const rest = new REST({ version: '9' }).setToken(token)
 
