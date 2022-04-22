@@ -35,10 +35,15 @@
     // yarn build
     // cp output/tree.json ../snap/
     const merkleTreePath = './tree.json';
+    console.log('hello world');
 
     const snapId = `local:${window.location.href}`;
-  
-    let merkleProof = null;
+
+    let merkleProof = {
+        merkleRoot: '0x0000',
+        merklePathElements: [],
+        merklePathIndices: [],
+    };
 
     const connectButton = document.querySelector('button.connect')
     const getMerkleProofButton = document.querySelector('button.getMerkleProof')
@@ -83,9 +88,9 @@
     // here we call the snap's "generateProof" method
     async function generate () {
       try {
-        if (!merkleProof) {
-          alert('Please click "Get Merkle Proof" button first!');
-        }
+        //if (!merkleProof) {
+          //alert('Please click "Get Merkle Proof" button first!');
+        //}
 
         console.log('start generating proof...');
         const response = await ethereum.request({
