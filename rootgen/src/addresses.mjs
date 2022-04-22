@@ -8,13 +8,28 @@ async function getDevconCSVAddresses(csvFile) {
   return rows.map(r => r['Collection']);
 }
 
-async function getDevconAddresses(dataDir) {
+async function getDevconAddresses(dataDir, num, addTesters=false) {
+
+  if (addTesters) {
+    let testers = JSON.parse(readFileSync(`${dataDir}/test_addrs.json`))['addresses'];
+    return [...new Set(
+      testers.concat(
+                     await getDevconCSVAddresses(`${dataDir}/Devcon${num}.csv`))
+    )].map(BigInt)
+
+  } else {
+    return [...new Set(
+      await getDevconCSVAddresses(`${dataDir}/Devcon${num}.csv`)
+    )].map(BigInt)
+  }
+}
+
+async function getAllDevconAddresses(dataDir) {
   const allAddresses = (await getDevconCSVAddresses(`${dataDir}/Devcon1.csv`)).concat(
     await getDevconCSVAddresses(`${dataDir}/Devcon2.csv`),
     await getDevconCSVAddresses(`${dataDir}/Devcon3.csv`),
     await getDevconCSVAddresses(`${dataDir}/Devcon4.csv`),
-    await getDevconCSVAddresses(`${dataDir}/Devcon5.csv`),
-    await getDevconCSVAddresses(`${dataDir}/Devcon2 by Piper Merriam.csv`)
+    await getDevconCSVAddresses(`${dataDir}/Devcon5.csv`)
   );
 
   return [...new Set(allAddresses)].map(BigInt);

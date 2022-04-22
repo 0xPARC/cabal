@@ -32,7 +32,6 @@ export type Data = {
   guild: Guild
   role: Role
   user: User
-  merkleProofsByAddr: Record<string, MerkleProof>
 }
 
 type Error = {
@@ -66,25 +65,17 @@ export default async function handler(
 
   // This is for POST (i.e. uploading proof for authToken)
   if (req.method === 'POST') {
-    console.log(req.body) // This is JSON
+    // console.log(req.body) // This is JSON
     const snarkProof = req.body.proof
-    const publicSignals = req.body.publicSignals
+    const parsed = JSON.parse(req.body)
+    console.log(parsed)
+    const publicSignals = parsed.publicSignals
     const publicSignalMerkleRoot = publicSignals[1]
     const nullifier = publicSignals[0]
 
-    const proof = await prisma.proof.create({
-      data: {
-        status: 'test_proof',
-        proof: JSON.stringify(req.body),
-        authTokenString: authTokenString,
-        nullifier: req.body.publicSignals[0],
-        configuredConnectionId: authToken.configuredConnectionId,
-      },
-    })
-
-    console.log(req.body)
-    console.log(req.body.proof)
-    console.log(req.body.publicSignals)
+    // console.log(req.body)
+    // console.log(req.body.proof)
+    // console.log(req.body.publicSignals)
     // publicSignals = [
     //   "405120837482288270193709312274786634591916908889974263035122340142620319115",
     //   "11575659063411809053808698653243228788610440614219455013616072495564231950142"
@@ -97,12 +88,13 @@ export default async function handler(
     // const vkey = JSON.parse(vkeyFile.toString())
     const proofVerified = await groth16.verify(
       vkey,
-      req.body.publicSignals,
-      req.body.proof
+      parsed.publicSignals,
+      parsed.proof
     )
     let error = ''
 
     if (proofVerified) {
+      console.log('proof verified')
       if (
         publicSignalMerkleRoot !== authToken.configuredConnection.merkleRoot
       ) {
@@ -117,7 +109,9 @@ export default async function handler(
         },
         select: { proofs: { where: { nullifier: nullifier } } },
       })
-      if (existingNullifier) {
+      console.log('existing nullifier')
+      console.log(existingNullifier)
+      if (existingNullifier[0].proofs.length > 0) {
         error = 'Nullifier already exists.'
       }
       if (!error) {
@@ -134,6 +128,16 @@ export default async function handler(
         }
         const roleId = authToken.configuredConnection.roleId
         await member.roles.add([roleId])
+        // Only create the proof if the discord role was created
+        const proof = await prisma.proof.create({
+          data: {
+            status: 'test_proof',
+            proof: JSON.stringify(parsed),
+            authTokenString: authTokenString,
+            nullifier: parsed.publicSignals[0],
+            configuredConnectionId: authToken.configuredConnectionId,
+          },
+        })
       }
     }
 
@@ -143,6 +147,7 @@ export default async function handler(
     }
 
     res.status(200).json(proofSubmissionResult)
+    return
   }
 
   // This is for GET
@@ -162,15 +167,6 @@ export default async function handler(
     role: role,
     guild: guild,
     user: authToken.user,
-    merkleProofsByAddr: {
-      '0x3Af621b0a91F667B38A652Aff8B5d5c9855dD737': {
-        merklePathElements: [
-          '0x35f3d53b4fe1cbE59810687BB2b0795778d8605F',
-          '0x123d53b4fe1cbE59810687BB2b0795778d8605F',
-        ],
-        merklePathIndices: [0, 1, 0],
-      },
-    },
   })
 }
 

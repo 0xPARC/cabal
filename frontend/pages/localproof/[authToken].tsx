@@ -19,7 +19,6 @@ import Slideover from '../../components/Slideover'
 import LoadingText from '../../components/LoadingText'
 import { UploadIcon } from '@heroicons/react/solid'
 import Image from 'next/image'
-import Link from 'next/link'
 
 import dynamic from 'next/dynamic'
 const DynamicReactJson = dynamic(import('react-json-view'), { ssr: false })
@@ -28,38 +27,21 @@ declare let window: any
 const snapId = 'npm:cabal-xyz-snap'
 
 const getStep = (
-  metamaskAddress: string | null,
-  zkProof: string | null,
+  zkProof: string | undefined,
   proofVerifiedInfo: ProofVerifiedInfo | null
 ) => {
-  if (!metamaskAddress) return 1
-  if (!zkProof) return 2
-  if (!proofVerifiedInfo?.submitted) return 3
-  return 4
+  if (!zkProof) return 1
+  if (!proofVerifiedInfo?.submitted) return 2
+  return 3
 }
 
-const TITLES = [
-  'Please connect with Metamask',
-  'Start generating a ZK proof',
-  'Your ZK proof is ready to go',
-]
-
-export type ZKProofInfo = {
-  zkProof: string | null
-  error: string | null
-  loading: boolean
-}
+const TITLES = ['Enter your ZK proof']
 
 export type ProofVerifiedInfo = {
   submitted: boolean
   proofValid: boolean | null
   error: string
   loading: boolean
-}
-
-function truncateString(s: string, maxLength: number = 25) {
-  if (s.length <= maxLength) return s
-  return s.substring(0, maxLength - 3) + '...'
 }
 
 const getTitleTextProofVerificationStep = (
@@ -81,22 +63,14 @@ const AuthToken = () => {
 
   const [authTokenData, setAuthTokenData] = useState<Data | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [metamaskAddress, setMetamaskAddress] = useState<string | null>(null)
-  const {
-    merkleProof,
-    loading: merkleProofLoading,
-    error: merkleProofError,
-  } = useMerkleProof(authTokenData, metamaskAddress)
-  const [zkProofInfo, setZkProofInfo] = useState<ZKProofInfo>({
-    zkProof: null,
-    error: null,
-    loading: false,
-  })
+  const [zkProof, setZkProof] = useState<string | undefined>()
+  const [parsedProof, setParsedProof] = useState<any>(null)
+  const [parseError, setParseError] = useState<string>('')
 
   const [proofVerifiedInfo, setProofVerifiedInfo] =
     useState<ProofVerifiedInfo | null>(null)
 
-  const step = getStep(metamaskAddress, zkProofInfo.zkProof, proofVerifiedInfo)
+  const step = getStep(zkProof, proofVerifiedInfo)
 
   // TODO extract this into custom effect with loading & error
   useEffect(() => {
@@ -115,21 +89,25 @@ const AuthToken = () => {
     fetchData()
   }, [authToken])
 
-  const connectToMetamask = () => {
-    const connectToMetamaskAsync = async () => {
-      const { provider, signer, network } = await setupWeb3()
-      // console.log(provider, signer, network)
-      const addr = await signer.getAddress()
-      console.log(addr)
-      setMetamaskAddress(addr)
-    }
-    connectToMetamaskAsync()
-  }
-
   const openSlideOver = (slideoverContent: any, title: string) => {
     setSlideoverTitle(title)
     setSlideroverContent(slideoverContent)
     setSlideoverOpen(true)
+  }
+
+  const onEnter = (enteredText: string) => {
+    // TODO validate here
+    console.log(enteredText)
+    setZkProof(enteredText)
+    try {
+      const parse = JSON.parse(enteredText)
+      setParsedProof(parse)
+      setParseError('')
+    } catch (e: any) {
+      console.log(e)
+      setParsedProof(null)
+      setParseError(e.toString())
+    }
   }
 
   return (
@@ -146,7 +124,7 @@ const AuthToken = () => {
           </a>
         </div>
       </div>
-      <div className="-mt-24 flex h-full items-center justify-center bg-black p-20 text-white">
+      <div className="-mt-24 flex h-full items-center justify-center bg-black p-20 text-white	">
         {/* <button onClick={() => setSlideoverOpen(true)}>Test Button</button> */}
         <Slideover
           open={slideoverOpen}
@@ -164,22 +142,12 @@ const AuthToken = () => {
           )}
         </Slideover>
         {/* <div>Spacer</div> */}
-        <div className="items-center justify-center	self-center">
-          <div className="flex justify-between">
-            <Stepper>ZK Verification STEP {step}/4</Stepper>
-            <div className="flex items-center justify-center px-2">
-              <span className="p-2">
-                <UploadIcon width={16} height={16} />
-              </span>
-              <Link href={`/localproof/${authToken}`}>
-                <a className="text-s hover:text-gray-400">
-                  {'Upload Local Proof'}
-                </a>
-              </Link>
-            </div>
+        <div className="items-center justify-center self-center">
+          <div className="flex">
+            <Stepper>ZK Verification (Local Proving)</Stepper>
           </div>
-          {step < 4 && <Title> {TITLES[step - 1]} </Title>}
-          {step === 4 && proofVerifiedInfo && (
+          {step < 3 && <Title> {TITLES[0]} </Title>}
+          {step === 3 && proofVerifiedInfo && (
             <Title>
               {getTitleTextProofVerificationStep(proofVerifiedInfo)}
             </Title>
@@ -210,52 +178,42 @@ const AuthToken = () => {
                 />
               </div>
             )}
-            {step >= 2 &&
-              metamaskAddress && ( // If step >= 2, then metamask Address is defined
-                <div>
-                  <InfoRow name="Address" content={metamaskAddress} />
-                  {merkleProofLoading && (
-                    <InfoRow
-                      name="Loading"
-                      content="Merkle Proof Computing"
-                      color="text-yellow-500"
-                    />
-                  )}
-                  {merkleProofError && (
-                    <InfoRow
-                      name="Error"
-                      content={merkleProofError}
-                      color="text-red-500"
-                    />
-                  )}
-                  {merkleProof && (
-                    <InfoRow
-                      name="Merkle Proof"
-                      content={
-                        <span
-                          onClick={() =>
-                            openSlideOver(merkleProof, 'Merkle Proof')
-                          }
-                          className="hover:cursor-pointer hover:text-terminal-green"
-                        >
-                          Click to view
-                          {/* {JSON.stringify(merkleProof)} */}
-                        </span>
-                      }
-                    />
-                  )}
-                </div>
-              )}
-            {step >= 3 && (
+            <div className="py-5">
+              <label
+                htmlFor="comment"
+                className="block font-bold text-terminal-green"
+              >
+                Enter your ZK Proof
+              </label>
+              <div className="mt-1">
+                <textarea
+                  rows={4}
+                  name="comment"
+                  id="comment"
+                  className="block w-full resize-none rounded-md border-gray-300 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm	"
+                  // defaultValue={'This is the default'}
+                  onChange={(event) => onEnter(event.target.value)}
+                  value={zkProof}
+                />
+              </div>
+            </div>
+            {parseError && (
+              <div className="max-w-lg">
+                <InfoRow
+                  name="Error in parsing"
+                  content={parseError}
+                  color="text-red-500"
+                />
+              </div>
+            )}
+            {step === 2 && (
               <div>
-                {zkProofInfo.zkProof && (
+                {parsedProof && (
                   <InfoRow
                     name="ZK Proof"
                     content={
                       <span
-                        onClick={() =>
-                          openSlideOver(zkProofInfo.zkProof, 'ZK Proof')
-                        }
+                        onClick={() => openSlideOver(parsedProof, 'ZK Proof')}
                         className="hover:cursor-pointer hover:text-terminal-green"
                       >
                         {/* {JSON.stringify(zkProofInfo.zkProof)} */}
@@ -264,30 +222,22 @@ const AuthToken = () => {
                     }
                   />
                 )}
-                {zkProofInfo.error && (
-                  <InfoRow
-                    name="Error"
-                    content={zkProofInfo.error}
-                    color="text-red-500"
-                  />
-                )}
               </div>
             )}
           </div>
-          {step === 1 && <Button onClick={connectToMetamask}>Connect</Button>}
-          {step === 2 && (
-            <ProofButton
-              updateParent={setZkProofInfo}
-              merkleRoot={authTokenData?.configuredConnection.merkleRoot || ''}
-              merkleProof={merkleProof}
-            />
-          )}
-          {step >= 3 && (
+          {parsedProof && (
             <SubmitButton
               updateParent={setProofVerifiedInfo}
-              zkProof={zkProofInfo.zkProof}
+              zkProof={JSON.stringify(parsedProof)}
               authToken={authToken as string}
             />
+          )}
+          {!parsedProof && (
+            <Button className="bg-slate-500 cursor-not-allowed text-red-500">
+              {zkProof === undefined || zkProof === ''
+                ? 'No Input'
+                : 'Invalid Input'}
+            </Button>
           )}
         </div>
       </div>

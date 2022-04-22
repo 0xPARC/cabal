@@ -8,4 +8,7 @@ module.exports = {
     // !! WARN !!
     ignoreBuildErrors: true,
   },
+  compiler: {
+    styledComponents: true,
+  },
 }
