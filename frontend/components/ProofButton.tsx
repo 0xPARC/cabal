@@ -46,8 +46,6 @@ export default function ProofButton({
   const buttonText = loading ? 'Generating...' : 'Generate Proof'
 
   useEffect(() => {
-    console.log('Updating parent')
-    console.log(loading, zkProof, error)
     updateParent({ zkProof, error, loading })
   }, [loading, zkProof, error])
 

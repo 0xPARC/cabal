@@ -50,6 +50,7 @@ export default function SubmitButton({
           setError(proofSubmissionResult.error)
         })
         .catch(() => {
+          setLoading(false)
           setError('There was an internal server error. Try again later.')
         })
         .finally(() => setLoading(false))

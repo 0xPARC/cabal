@@ -65,15 +65,17 @@ export default async function handler(
 
   // This is for POST (i.e. uploading proof for authToken)
   if (req.method === 'POST') {
-    console.log(req.body) // This is JSON
+    // console.log(req.body) // This is JSON
     const snarkProof = req.body.proof
-    const publicSignals = req.body.publicSignals
+    const parsed = JSON.parse(req.body)
+    console.log(parsed)
+    const publicSignals = parsed.publicSignals
     const publicSignalMerkleRoot = publicSignals[1]
     const nullifier = publicSignals[0]
 
-    console.log(req.body)
-    console.log(req.body.proof)
-    console.log(req.body.publicSignals)
+    // console.log(req.body)
+    // console.log(req.body.proof)
+    // console.log(req.body.publicSignals)
     // publicSignals = [
     //   "405120837482288270193709312274786634591916908889974263035122340142620319115",
     //   "11575659063411809053808698653243228788610440614219455013616072495564231950142"
@@ -86,8 +88,8 @@ export default async function handler(
     // const vkey = JSON.parse(vkeyFile.toString())
     const proofVerified = await groth16.verify(
       vkey,
-      req.body.publicSignals,
-      req.body.proof
+      parsed.publicSignals,
+      parsed.proof
     )
     let error = ''
 
@@ -130,9 +132,9 @@ export default async function handler(
         const proof = await prisma.proof.create({
           data: {
             status: 'test_proof',
-            proof: JSON.stringify(req.body),
+            proof: JSON.stringify(parsed),
             authTokenString: authTokenString,
-            nullifier: req.body.publicSignals[0],
+            nullifier: parsed.publicSignals[0],
             configuredConnectionId: authToken.configuredConnectionId,
           },
         })
