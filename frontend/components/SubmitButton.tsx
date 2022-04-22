@@ -1,6 +1,6 @@
 import { useState, useEffect, SetStateAction, Dispatch } from 'react'
 import { Button } from './Base'
-import { ProofVerifiedInfo, ZKProofInfo } from '../pages/verify2/[authToken]'
+import { ProofVerifiedInfo, ZKProofInfo } from '../pages/verify/[authToken]'
 import { ProofSubmissionResult } from '../pages/api/verify/[authTokenString]'
 import InfoRow from './InfoRow'
 

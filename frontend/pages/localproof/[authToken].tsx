@@ -18,6 +18,7 @@ import SubmitButton from '../../components/SubmitButton'
 import Slideover from '../../components/Slideover'
 import LoadingText from '../../components/LoadingText'
 import { UploadIcon } from '@heroicons/react/solid'
+import Image from 'next/image'
 
 import dynamic from 'next/dynamic'
 const DynamicReactJson = dynamic(import('react-json-view'), { ssr: false })
@@ -34,7 +35,7 @@ const getStep = (
   return 3
 }
 
-const TITLES = ['Please enter your ZK proof', 'Your ZK proof is ready to go']
+const TITLES = ['Enter your ZK proof']
 
 export type ProofVerifiedInfo = {
   submitted: boolean
@@ -113,9 +114,17 @@ const AuthToken = () => {
     <div className="h-screen">
       <Head>
         <title>verify cabal.xyz</title>
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/cabal_favicon.png" />
       </Head>
-      <div className="flex h-full items-center justify-center bg-black p-20 text-white	">
+      <div className="flex p-5">
+        <Image src="/logo.png" alt="cabal" width="64" height="64" />
+        <div className="flex items-center justify-center px-5 text-lg text-white">
+          <a href="/" className="hover:text-gray-400">
+            cabal.xyz
+          </a>
+        </div>
+      </div>
+      <div className="-mt-24 flex h-full items-center justify-center bg-black p-20 text-white	">
         {/* <button onClick={() => setSlideoverOpen(true)}>Test Button</button> */}
         <Slideover
           open={slideoverOpen}
@@ -133,11 +142,11 @@ const AuthToken = () => {
           )}
         </Slideover>
         {/* <div>Spacer</div> */}
-        <div className="items-center justify-center	self-center">
+        <div className="items-center justify-center self-center">
           <div className="flex">
             <Stepper>ZK Verification (Local Proving)</Stepper>
           </div>
-          {step < 3 && <Title> {TITLES[step - 1]} </Title>}
+          {step < 3 && <Title> {TITLES[0]} </Title>}
           {step === 3 && proofVerifiedInfo && (
             <Title>
               {getTitleTextProofVerificationStep(proofVerifiedInfo)}
@@ -169,10 +178,10 @@ const AuthToken = () => {
                 />
               </div>
             )}
-            <div>
+            <div className="py-5">
               <label
                 htmlFor="comment"
-                className="block text-sm font-medium text-gray-700"
+                className="block font-bold text-terminal-green"
               >
                 Enter your ZK Proof
               </label>
@@ -181,15 +190,21 @@ const AuthToken = () => {
                   rows={4}
                   name="comment"
                   id="comment"
-                  className="block w-full rounded-md border-gray-300 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                  defaultValue={'This is the default'}
+                  className="block w-full resize-none rounded-md border-gray-300 text-gray-700 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm	"
+                  // defaultValue={'This is the default'}
                   onChange={(event) => onEnter(event.target.value)}
                   value={zkProof}
                 />
               </div>
             </div>
             {parseError && (
-              <InfoRow name="Error in parsing" content={parseError} />
+              <div className="max-w-lg">
+                <InfoRow
+                  name="Error in parsing"
+                  content={parseError}
+                  color="text-red-500"
+                />
+              </div>
             )}
             {step === 2 && (
               <div>
@@ -216,6 +231,13 @@ const AuthToken = () => {
               zkProof={JSON.stringify(parsedProof)}
               authToken={authToken as string}
             />
+          )}
+          {!parsedProof && (
+            <Button className="bg-slate-500 cursor-not-allowed text-red-500">
+              {zkProof === undefined || zkProof === ''
+                ? 'No Input'
+                : 'Invalid Input'}
+            </Button>
           )}
         </div>
       </div>
