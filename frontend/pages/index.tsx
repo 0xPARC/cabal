@@ -40,9 +40,19 @@ const Homepage = () => {
       <div className="-mt-24 flex h-full items-center justify-center bg-black text-white">
         <div className="max-w-3xl">
           <SimpleRow title="What is cabal?">
-            {' '}
-            FILL IN DESCRIPTION HERE
+            Cabal is a discord bot you can add to your server to create{' '}
+            <i>credibly pseudonymous</i> channels based on their Ethereum
+            activity.
+            <div>
+              <span className="text-terminal-green">{'>>>'} </span>
+              <span>
+                Users can join these channels by providing a zero-knowledge
+                proof showing that they carried out some action on Ethereum
+                without revealing their address.
+              </span>
+            </div>
           </SimpleRow>
+
           <SimpleRow title="How do I use it to manage my gated-discord roles (for admins)?">
             <a
               href="https://www.notion.so/0xparc/Configuring-Cabal-2554b43826e9431e934062452f07be65"
