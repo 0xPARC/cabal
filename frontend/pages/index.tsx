@@ -72,11 +72,18 @@ const Homepage = () => {
             </a>
           </SimpleRow>
           <SimpleRow title="Blog Post">
-            Coming soon! We are planning to release a blog post about FILL IN
-            MORE INFORMATION ABOUT IT HERE
+            Coming soon! Follow{' '}
+            <a
+              href="https://twitter.com/0xPARC"
+              target="_blank"
+              className="hover:text-gray-400"
+            >
+              @0xPARC
+            </a>{' '}
+            for more
           </SimpleRow>
           <SimpleRow title="Open Source Resources">
-            Coming soon! FILL IN A LITTLE MORE TEASER INFORMATION
+            https://github.com/0xparc/cabal
           </SimpleRow>
           <Row title="Contact Info">
             <div>
@@ -92,18 +99,6 @@ const Homepage = () => {
                   className="hover:text-gray-400"
                 >
                   twitter: @cabalxyz
-                </a>
-              </span>
-            </div>
-            <div>
-              <span className="text-terminal-green">{'>>>'} </span>
-              <span>
-                <a
-                  href="https://twitter.com/cabalxyz"
-                  target="_blank"
-                  className="hover:text-gray-400"
-                >
-                  discord invite
                 </a>
               </span>
             </div>
