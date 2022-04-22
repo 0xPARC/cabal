@@ -40,9 +40,19 @@ const Homepage = () => {
       <div className="-mt-24 flex h-full items-center justify-center bg-black text-white">
         <div className="max-w-3xl">
           <SimpleRow title="What is cabal?">
-            {' '}
-            FILL IN DESCRIPTION HERE
+            Cabal is a discord bot you can add to your server to create{' '}
+            <i>credibly pseudonymous</i> channels based on their Ethereum
+            activity.
+            <div>
+              <span className="text-terminal-green">{'>>>'} </span>
+              <span>
+                Users can join these channels by providing a zero-knowledge
+                proof showing that they carried out some action on Ethereum
+                without revealing their address.
+              </span>
+            </div>
           </SimpleRow>
+
           <SimpleRow title="How do I use it to manage my gated-discord roles (for admins)?">
             <a
               href="https://www.notion.so/0xparc/Configuring-Cabal-2554b43826e9431e934062452f07be65"
@@ -62,11 +72,18 @@ const Homepage = () => {
             </a>
           </SimpleRow>
           <SimpleRow title="Blog Post">
-            Coming soon! We are planning to release a blog post about FILL IN
-            MORE INFORMATION ABOUT IT HERE
+            Coming soon! Follow{' '}
+            <a
+              href="https://twitter.com/0xPARC"
+              target="_blank"
+              className="hover:text-gray-400"
+            >
+              @0xPARC
+            </a>{' '}
+            for more
           </SimpleRow>
           <SimpleRow title="Open Source Resources">
-            Coming soon! FILL IN A LITTLE MORE TEASER INFORMATION
+            https://github.com/0xparc/cabal
           </SimpleRow>
           <Row title="Contact Info">
             <div>
@@ -82,18 +99,6 @@ const Homepage = () => {
                   className="hover:text-gray-400"
                 >
                   twitter: @cabalxyz
-                </a>
-              </span>
-            </div>
-            <div>
-              <span className="text-terminal-green">{'>>>'} </span>
-              <span>
-                <a
-                  href="https://twitter.com/cabalxyz"
-                  target="_blank"
-                  className="hover:text-gray-400"
-                >
-                  discord invite
                 </a>
               </span>
             </div>
