@@ -27,6 +27,7 @@
     <button class="connect">Connect</button>
     <button class="getMerkleProof">Get Merkle Proof</button>
     <button class="generateProof">Generate Proof</button>
+    <button class="keepAlive">Keep Alive</button>
   </body>
 
   <script>
@@ -43,10 +44,12 @@
     const connectButton = document.querySelector('button.connect')
     const getMerkleProofButton = document.querySelector('button.getMerkleProof')
     const generateButton = document.querySelector('button.generateProof')
+    const keepAliveButton = document.querySelector('button.keepAlive')
 
     connectButton.addEventListener('click', connect)
     generateButton.addEventListener('click', generate)
     getMerkleProofButton.addEventListener('click', getMerkleProof)
+    keepAliveButton.addEventListener('click', keepAlive)
 
     // here we get permissions to interact with and install the snap
     async function connect () {
@@ -95,13 +98,23 @@
             ...merkleProof
           }]
         })
-
         console.log('receieved response:');
         console.log(response);
       } catch (err) {
         console.error(err)
         alert('Problem happened: ' + err.message || err)
       }
+    }
+
+    async function keepAlive() {
+      console.log('keep alive');
+      const response = await ethereum.request({
+        method: 'wallet_invokeSnap',
+        params: [snapId, {
+          method: 'keepAlive'
+        }]
+      })
+      console.log(response);
     }
   </script>
 </html>

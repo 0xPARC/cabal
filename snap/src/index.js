@@ -33,6 +33,7 @@ wallet.registerRpcMessageHandler(async (originString, requestObject) => {
       const privateKey = extendedPrivateKey.slice(0, 32);
       const privateKeyHex = "0x" + Buffer.from(privateKey).toString("hex");
       const privkeyTuple = bigintToTuple(BigInt(privateKeyHex));
+      console.log(privkeyTuple);
 
       const poseidon = await buildPoseidon();
       const F = poseidon.F; // poseidon finite field
@@ -47,8 +48,11 @@ wallet.registerRpcMessageHandler(async (originString, requestObject) => {
         merklePathIndices: requestObject.merklePathIndices,
       };
       const proof = await generateProof(input);
+      console.log(proof);
 
       return proof;
+    case "keepAlive":
+      return "Alive!";
     default:
       throw new Error("Method not found.");
   }
