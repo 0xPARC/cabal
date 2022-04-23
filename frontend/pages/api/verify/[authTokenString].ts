@@ -66,8 +66,11 @@ export default async function handler(
   // This is for POST (i.e. uploading proof for authToken)
   if (req.method === 'POST') {
     // console.log(req.body) // This is JSON
-    const snarkProof = req.body.proof
-    const parsed = JSON.parse(req.body)
+    // const snarkProof = req.body.proof
+    let parsed = req.body
+    if (typeof req.body === 'string') {
+      parsed = JSON.parse(parsed)
+    }
     console.log(parsed)
     const publicSignals = parsed.publicSignals
     const publicSignalMerkleRoot = publicSignals[1]
