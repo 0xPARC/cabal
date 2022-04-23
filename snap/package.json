@@ -1,6 +1,6 @@
 {
   "name": "cabal-xyz-snap",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Metamask snap fo cabal.xyz",
   "repository": {
     "type": "git",
