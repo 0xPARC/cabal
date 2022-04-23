@@ -26,7 +26,7 @@ const Homepage = () => {
   return (
     <div className="h-screen">
       <Head>
-        <title>verify cabal.xyz</title>
+        <title>Cabal</title>
         <link rel="icon" href="/cabal_favicon.png" />
       </Head>
       <div className="flex p-5">
