@@ -4,7 +4,6 @@
 - Geneate merkle tree tree.json, this would be used to get merkle proof
 ```
 cd ../rootgen
-// add your address to data/test_addrs.json
 yarn build
 cp output/tree.json ../snap
 ```
