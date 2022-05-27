@@ -14,6 +14,8 @@ import { setupWeb3, getProvider, getSigner, getNetwork } from '../../lib/web3'
 import { useMerkleProof } from '../../lib/utils'
 import InfoRow from '../../components/InfoRow'
 import ProofButton from '../../components/ProofButton'
+import SigProofButton from '../../components/SigProofButton'
+
 import SubmitButton from '../../components/SubmitButton'
 import Slideover from '../../components/Slideover'
 import LoadingText from '../../components/LoadingText'
@@ -276,11 +278,23 @@ const AuthToken = () => {
           </div>
           {step === 1 && <Button onClick={connectToMetamask}>Connect</Button>}
           {step === 2 && (
-            <ProofButton
-              updateParent={setZkProofInfo}
-              merkleRoot={authTokenData?.configuredConnection.merkleRoot || ''}
-              merkleProof={merkleProof}
-            />
+            <div className="flex justify-between">
+              <ProofButton
+                updateParent={setZkProofInfo}
+                merkleRoot={
+                  authTokenData?.configuredConnection.merkleRoot || ''
+                }
+                merkleProof={merkleProof}
+              />
+              <SigProofButton
+                updateParent={setZkProofInfo}
+                merkleRoot={
+                  authTokenData?.configuredConnection.merkleRoot || ''
+                }
+                merkleProof={merkleProof}
+                address={metamaskAddress || ''}
+              />
+            </div>
           )}
           {step >= 3 && (
             <SubmitButton

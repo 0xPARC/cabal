@@ -25,6 +25,7 @@
     "discord.js": "^13.6.0",
     "dotenv": "^16.0.0",
     "dotenv-cli": "^5.1.0",
+    "ethereumjs-util": "^7.1.4",
     "ethers": "5.6",
     "express": "^4.17.3",
     "forever": "^4.0.3",
@@ -35,7 +36,7 @@
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-json-view": "^1.21.3",
-    "snarkjs": "^0.4.15",
+    "snarkjs": "^0.4.19",
     "styled-components": "^5.3.3",
     "swr": "^1.2.2",
     "yargs": "^17.4.1"

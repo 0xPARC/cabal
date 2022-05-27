@@ -28,6 +28,7 @@ const Homepage = () => {
       <Head>
         <title>Cabal</title>
         <link rel="icon" href="/cabal_favicon.png" />
+        <script src="/snarkjs.min.js" />
       </Head>
       <div className="flex p-5">
         <Image src="/logo.png" alt="cabal" width="64" height="64" />

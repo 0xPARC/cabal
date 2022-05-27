@@ -53,3 +53,33 @@ template ECDSAPrivToAddress(n, k) {
   }
   address <== pkToAddress.address;
 }
+
+template ECDSAVerifyNoPubkeyCheckToAddress(n,k) {
+  signal input r[k];
+  signal input s[k];
+  signal input msghash[k];
+  signal input pubkey[2][k];
+
+  signal output address;
+
+  component ecdsaVerify = ECDSAVerifyNoPubkeyCheck(n,k);
+  for (var i=0; i < k; i++) {
+    ecdsaVerify.r[i] <== r[i];
+    ecdsaVerify.s[i] <== s[i];
+    ecdsaVerify.msghash[i] <== msghash[i];
+    ecdsaVerify.pubkey[0][i] <== pubkey[0][i];
+    ecdsaVerify.pubkey[1][i] <== pubkey[1][i];
+  }
+
+  // Assert that the result of ECDSA verify is true
+  log(ecdsaVerify.result);
+  ecdsaVerify.result === 1;
+
+  // now compute address, copied from above
+  component pkToAddress = ChunkedPubkeyToAddress(n, k);
+  for (var i = 0; i < k; i++) {
+    pkToAddress.chunkedPubkey[0][i] <== pubkey[0][i];
+    pkToAddress.chunkedPubkey[1][i] <== pubkey[1][i];
+  }
+  address <== pkToAddress.address;
+}

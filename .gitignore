@@ -3,6 +3,6 @@
 
 *.zkey
 *.wasm
-
+*.ptau
 tree.json
 sample_proof.json

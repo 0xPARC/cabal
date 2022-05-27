@@ -35,8 +35,7 @@ function bitsToBytes(a) {
 }
 
 function hexToBytes(hex) {
-  for (var bytes = [], c = 0; c < hex.length; c += 2)
-    bytes.push(parseInt(hex.substr(c, 2), 16));
+  for (var bytes = [], c = 0; c < hex.length; c += 2) bytes.push(parseInt(hex.substr(c, 2), 16));
   return bytes;
 }
 
@@ -78,6 +77,30 @@ function generatePublicKey() {
   return publicKey;
 }
 
+// for converting privkey to 4-tuple
+function bigintToTuple(x) {
+  // 2 ** 64
+  let mod = 18446744073709551616n;
+  let ret = [0n, 0n, 0n, 0n];
+
+  var x_temp = x;
+  for (var idx = 0; idx < 4; idx++) {
+    ret[idx] = x_temp % mod;
+    x_temp = x_temp / mod;
+  }
+  return ret;
+}
+
+function pubkeyStrToXY(pk) {
+  // remove 0x04, then divide in 2
+  let pkUnprefixed = pk.substring(4);
+
+  let xStr = pkUnprefixed.substring(0, 64);
+  let yStr = pkUnprefixed.substring(64);
+
+  return [BigInt("0x" + xStr), BigInt("0x" + yStr)];
+}
+
 module.exports = {
   bytesToBits,
   bitsToBytes,
@@ -85,4 +108,6 @@ module.exports = {
   bytesToHex,
   numToBits,
   generatePublicKey,
+  bigintToTuple,
+  pubkeyStrToXY,
 };

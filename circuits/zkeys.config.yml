@@ -15,6 +15,11 @@ circuits:
     params: [64, 4, 10]
     pubInputs: ["merkleRoot", "nullifier"]
     type: "prod"
+  - template: "./circuits/verify_sig_cabal.circom"
+    component: "VerifySigCabal"
+    params: [64, 4, 10]
+    pubInputs: ["merkleRoot"]
+    type: "prod"
 
 ptauFiles:
   1:
