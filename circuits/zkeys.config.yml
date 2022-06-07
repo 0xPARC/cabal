@@ -18,7 +18,12 @@ circuits:
   - template: "./circuits/verify_sig_cabal.circom"
     component: "VerifySigCabal"
     params: [64, 4, 10]
-    pubInputs: ["merkleRoot"]
+    pubInputs: ["merkleRoot", "msghash"]
+    type: "prod"
+  - template: "./circuits/simple.circom"
+    component: "Multiplier2"
+    params: []
+    pubInputs: ["a"]
     type: "prod"
 
 ptauFiles:

@@ -229,6 +229,7 @@ const AuthToken = () => {
             <SubmitButton
               updateParent={setProofVerifiedInfo}
               zkProof={JSON.stringify(parsedProof)}
+              sigProof={false}
               authToken={authToken as string}
             />
           )}

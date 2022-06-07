@@ -59,10 +59,12 @@ export default function SigProofButton({
   const [zkProof, setZkProof] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const buttonText = loading ? 'Generating...' : 'Generate Proof With Signature'
+  const buttonText = loading
+    ? 'Generating...'
+    : '(Beta) Generate Proof With Signature'
 
   useEffect(() => {
-    updateParent({ zkProof, error, loading })
+    updateParent({ zkProof, error, loading, sigProof: true })
   }, [loading, zkProof, error])
 
   async function generateProof() {
@@ -115,18 +117,36 @@ export default function SigProofButton({
     }
 
     console.log(sampleInput)
+    // eslint-disable-next-line @typescript-eslint/no-redeclare
+    interface BigInt {
+      /** Convert to BigInt to string form in JSON.stringify */
+      toJSON: () => string
+    }
+    BigInt.prototype['toJSON'] = function () {
+      return this.toString()
+    }
+    console.log(JSON.stringify(sampleInput))
 
     setLoading(true)
     console.log('After set loading')
     try {
-      const wasmPath = 'http://localhost:3000/VerifySigCabal_64-4-10_prod.wasm'
-      const zkeyPath = 'http://localhost:3000/VerifySigCabalTest.zkey'
+      const wasmPath =
+        'https://cabal.sfo3.digitaloceanspaces.com/VerifySigCabal_64-4-10_prod.wasm'
+      const zkeyPath =
+        'https://cabal.sfo3.digitaloceanspaces.com/VerifySigCabal_64-4-10_prod.zkey'
       console.log('before proof', new Date().toLocaleString())
-      const proof = await snarkjs.groth16.fullProve(
-        sampleInput,
-        wasmPath,
-        zkeyPath
-      )
+      const proof = await fetch(`/api/remoteProve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(sampleInput),
+      })
+        .then((res) => res.json())
+        .then((json) => JSON.parse(json))
+      // const proof = await snarkjs.groth16.fullProve(
+      //   sampleInput,
+      //   wasmPath,
+      //   zkeyPath
+      // )
       console.log('proof generated', new Date().toLocaleString())
       console.log(proof)
       setZkProof(proof)

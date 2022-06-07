@@ -1,5 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
+
 // import snarkjs from 'snarkjs'
 import { groth16 } from 'snarkjs'
 
@@ -48,6 +49,8 @@ export default async function handler(
   res: NextApiResponse<Data | Error | string>
 ) {
   let { authTokenString } = req.query
+
+  console.log(authTokenString)
   if (typeof authTokenString == 'object') {
     res.status(400).json({ error: 'provided auth token is weird' })
     return
@@ -68,13 +71,20 @@ export default async function handler(
     // console.log(req.body) // This is JSON
     // const snarkProof = req.body.proof
     let parsed = req.body
+    let signature = false
     if (typeof req.body === 'string') {
       parsed = JSON.parse(parsed)
     }
-    console.log(parsed)
+    console.log(parsed, signature)
     const publicSignals = parsed.publicSignals
-    const publicSignalMerkleRoot = publicSignals[1]
+    if (publicSignals.length > 2) {
+      signature = true
+    }
+    const publicSignalMerkleRoot = publicSignals[publicSignals.length - 1]
     const nullifier = publicSignals[0]
+
+    let useVkey = vkey
+    if (signature) useVkey = sigVkey
 
     // console.log(req.body)
     // console.log(req.body.proof)
@@ -90,7 +100,7 @@ export default async function handler(
     // const vkeyFile = fs.readFileSync('./verification_key.json')
     // const vkey = JSON.parse(vkeyFile.toString())
     const proofVerified = await groth16.verify(
-      vkey,
+      useVkey,
       parsed.publicSignals,
       parsed.proof
     )
@@ -104,19 +114,23 @@ export default async function handler(
         error =
           'Merkle root in public signals of proof does not match authToken merkle root.'
       }
-      // Check for nullifier not being used before
-      const configuredConnectionId = authToken.configuredConnectionId
-      const existingNullifier = await prisma.configuredConnection.findMany({
-        where: {
-          id: configuredConnectionId,
-        },
-        select: { proofs: { where: { nullifier: nullifier } } },
-      })
-      console.log('existing nullifier')
-      console.log(existingNullifier)
-      if (existingNullifier[0].proofs.length > 0) {
-        error = 'Nullifier already exists.'
+
+      if (!signature) {
+        // Check for nullifier not being used before
+        const configuredConnectionId = authToken.configuredConnectionId
+        const existingNullifier = await prisma.configuredConnection.findMany({
+          where: {
+            id: configuredConnectionId,
+          },
+          select: { proofs: { where: { nullifier: nullifier } } },
+        })
+        console.log('existing nullifier')
+        console.log(existingNullifier)
+        if (existingNullifier[0].proofs.length > 0) {
+          error = 'Nullifier already exists.'
+        }
       }
+
       if (!error) {
         // discord add role
         const guildId = authToken.configuredConnection.guildId
@@ -259,6 +273,112 @@ const vkey = {
     [
       '10341748765869245869361018873948196570008407662073730870473095917462641810960',
       '14033715227242315267851452958818723384128442045773382620583348659578749522819',
+      '1',
+    ],
+  ],
+}
+
+const sigVkey = {
+  protocol: 'groth16',
+  curve: 'bn128',
+  nPublic: 5,
+  vk_alpha_1: [
+    '20491192805390485299153009773594534940189261866228447918068658471970481763042',
+    '9383485363053290200918347156157836566562967994039712273449902621266178545958',
+    '1',
+  ],
+  vk_beta_2: [
+    [
+      '6375614351688725206403948262868962793625744043794305715222011528459656738731',
+      '4252822878758300859123897981450591353533073413197771768651442665752259397132',
+    ],
+    [
+      '10505242626370262277552901082094356697409835680220590971873171140371331206856',
+      '21847035105528745403288232691147584728191162732299865338377159692350059136679',
+    ],
+    ['1', '0'],
+  ],
+  vk_gamma_2: [
+    [
+      '10857046999023057135944570762232829481370756359578518086990519993285655852781',
+      '11559732032986387107991004021392285783925812861821192530917403151452391805634',
+    ],
+    [
+      '8495653923123431417604973247489272438418190587263600148770280649306958101930',
+      '4082367875863433681332203403145435568316851327593401208105741076214120093531',
+    ],
+    ['1', '0'],
+  ],
+  vk_delta_2: [
+    [
+      '10857046999023057135944570762232829481370756359578518086990519993285655852781',
+      '11559732032986387107991004021392285783925812861821192530917403151452391805634',
+    ],
+    [
+      '8495653923123431417604973247489272438418190587263600148770280649306958101930',
+      '4082367875863433681332203403145435568316851327593401208105741076214120093531',
+    ],
+    ['1', '0'],
+  ],
+  vk_alphabeta_12: [
+    [
+      [
+        '2029413683389138792403550203267699914886160938906632433982220835551125967885',
+        '21072700047562757817161031222997517981543347628379360635925549008442030252106',
+      ],
+      [
+        '5940354580057074848093997050200682056184807770593307860589430076672439820312',
+        '12156638873931618554171829126792193045421052652279363021382169897324752428276',
+      ],
+      [
+        '7898200236362823042373859371574133993780991612861777490112507062703164551277',
+        '7074218545237549455313236346927434013100842096812539264420499035217050630853',
+      ],
+    ],
+    [
+      [
+        '7077479683546002997211712695946002074877511277312570035766170199895071832130',
+        '10093483419865920389913245021038182291233451549023025229112148274109565435465',
+      ],
+      [
+        '4595479056700221319381530156280926371456704509942304414423590385166031118820',
+        '19831328484489333784475432780421641293929726139240675179672856274388269393268',
+      ],
+      [
+        '11934129596455521040620786944827826205713621633706285934057045369193958244500',
+        '8037395052364110730298837004334506829870972346962140206007064471173334027475',
+      ],
+    ],
+  ],
+  IC: [
+    [
+      '20924385560170562648502508024441568375224179098866588387122303553307684384759',
+      '19320150598583668241921282369422879161996926331363015912115651027605760390135',
+      '1',
+    ],
+    [
+      '3515077929193145098635105420581630024513757011522587133551301294735215756186',
+      '19774918881756460891233525137219222622244799879381665354155122349686207208241',
+      '1',
+    ],
+    [
+      '16898556474017523908884746538610129758104154253075757672466086701827379488828',
+      '10695640127829605734354896472946215170560396706988640344796683602105490973145',
+      '1',
+    ],
+    [
+      '13232258040879906419921075364582796152564089846485461919736151648396309060917',
+      '7579336419329358640421351791361040288810464364016510018482107961181981122403',
+      '1',
+    ],
+    [
+      '7018842066006391021899548673758766499323639401054385263959327468049226236144',
+      '9103713477951725080427003016558406307120972161398528893879731132803565616',
+      '1',
+    ],
+    [
+      '9225485031223333958308217417411168028900523282957544530824372969584056754330',
+      '2869597933100622924843232128000168344231985167818489115731827160698092589060',
       '1',
     ],
   ],

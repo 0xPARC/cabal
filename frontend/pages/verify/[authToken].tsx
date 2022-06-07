@@ -50,6 +50,7 @@ export type ZKProofInfo = {
   zkProof: string | null
   error: string | null
   loading: boolean
+  sigProof: boolean
 }
 
 export type ProofVerifiedInfo = {
@@ -93,6 +94,7 @@ const AuthToken = () => {
     zkProof: null,
     error: null,
     loading: false,
+    sigProof: false,
   })
 
   const [proofVerifiedInfo, setProofVerifiedInfo] =
