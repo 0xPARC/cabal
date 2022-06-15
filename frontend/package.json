@@ -4,9 +4,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "bot": "ts-node cabal-bot/bot.ts",
+    "bot": "tsx cabal-bot/bot.ts",
     "bot-prod": "forever -c ts-node cabal-bot/bot.ts",
-    "bot-dev": "nodemon cabal-bot/bot.ts",
+    "bot-dev": "tsx watch cabal-bot/bot.ts",
     "bot-build": "tsc --project cabal-bot/tsconfig.bot.json"
   },
   "dependencies": {
@@ -28,6 +28,8 @@
     "ethers": "5.6",
     "express": "^4.17.3",
     "forever": "^4.0.3",
+    "lodash": "^4.17.21",
+    "lowdb": "^3.0.0",
     "next": "latest",
     "nodemon": "^2.0.15",
     "pm2": "^5.2.0",
@@ -35,12 +37,15 @@
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-json-view": "^1.21.3",
+    "short-uuid": "^4.2.0",
     "snarkjs": "^0.4.15",
     "styled-components": "^5.3.3",
     "swr": "^1.2.2",
+    "tsx": "^3.4.2",
     "yargs": "^17.4.1"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.182",
     "@types/node": "^17.0.23",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",

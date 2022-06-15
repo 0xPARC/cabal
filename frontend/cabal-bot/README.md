@@ -1,3 +1,20 @@
+# Discord Bot
+2 things must happen for the BOT to be deployed succesfully:
+- The commands must be deployed
+- The bot must be running
+
+## Local Bot Development
+- [Click "New Application"](https://discord.com/developers/applications)
+- Go to the "Bot" tab & copy the token
+- Go to OAuth2 > General & copy the client id
+- Add these to your .env file
+- Start running the bot with a command of your choice from package.json
+- Create an invite link for the bot
+    - ![[Discord]](./assets/oauth2_permissions.png)
+- Create a Discord server
+- Open the invite link & select which server (guild) you want to add the bot to
+- Do `npx tsx cabal-bot/deploy.ts --guildId <guildId>` to deploy the slash commands
+
 ## Discord client
 
 All commands should be run out of the parent folder.
