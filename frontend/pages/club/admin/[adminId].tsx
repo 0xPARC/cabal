@@ -1,29 +1,15 @@
-import { handle, json, redirect, TypedResponse } from 'next-runtime'
-import { Form } from 'next-runtime/form'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import invariant from 'tiny-invariant'
 import db from '../../../lib/db'
 import { Club } from '../../../lib/db/types'
 import ky from 'ky'
-import { ParsedUrlQuery } from 'next-runtime/types/querystring'
-import zod from 'zod'
+import { ParsedUrlQuery } from 'querystring'
 
-type GET = {
+type PageProps = {
   club: Club
   adminId: string
 }
-
-const Schema = zod.union([
-  zod.object({
-    addresses: zod.array(zod.string()),
-    adminId: zod.string(),
-  }),
-  zod.object({
-    adminId: zod.string(),
-    compute: zod.boolean(),
-  }),
-])
 
 function getAdminId(params: ParsedUrlQuery | undefined): string {
   invariant(params, `URL params required`)
@@ -36,49 +22,23 @@ function getAdminId(params: ParsedUrlQuery | undefined): string {
   return adminId
 }
 
-async function get({
+export const getServerSideProps: GetServerSideProps<PageProps> = async ({
   params,
-}: {
-  params?: ParsedUrlQuery
-}): Promise<TypedResponse<GET> | { notFound: true }> {
+}) => {
   const adminId = getAdminId(params)
   const adminPanelData = await db.getAdminPanelData({ adminId })
   return adminPanelData
-    ? json({ club: adminPanelData, adminId } as GET)
+    ? { props: { club: adminPanelData, adminId } }
     : { notFound: true }
 }
 
-export const getServerSideProps: GetServerSideProps = handle({
-  get,
-  async post({ req: { body } }) {
-    const parsed = Schema.parse(body)
-    const { adminId } = parsed
-    if ('addresses' in parsed) {
-      await db.addAddresses({
-        addresses: parsed.addresses,
-        adminId: adminId,
-      })
-    } else {
-      await db.computeMerkleRoot({ adminId })
-    }
-    return json({ success: true })
-  },
-})
-
-export default function ({ club, adminId }: GET) {
+export default function ({ club, adminId }: PageProps) {
   const { addresses, merkleRoot } = club
   const { asPath, replace } = useRouter()
-  //const origin =
-  //  typeof window !== 'undefined' && window.location.origin
-  //    ? window.location.origin
-  //    : ''
-  //const URL = `${origin}${asPath}`
-
   const rootHash = merkleRoot.root || null
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-700 p-8 text-white">
-      <Form className="hidden"></Form>
       <h1 className="text-4xl">Admin Panel</h1>
       <div className="mt-4 flex flex-row items-center gap-x-4">
         <h2 className="text-2xl">Addresses</h2>
@@ -89,7 +49,8 @@ export default function ({ club, adminId }: GET) {
             )
             const addresses = newAddresses?.split(',')
             if (!addresses || addresses.length === 0) return
-            await ky.post(asPath, { json: { addresses, adminId } })
+            await ky.post(`/api/clubAdmin`, { json: { addresses, adminId } })
+            console.log('refreshing')
             replace(asPath)
           }}
           className="h-full rounded bg-gray-800 px-4 py-1 font-bold"
@@ -103,7 +64,9 @@ export default function ({ club, adminId }: GET) {
               'Once you do this, you cannot add any more addresses. Proceed?'
             )
             if (proceed) {
-              await ky.post(asPath, { json: { compute: true, adminId } })
+              const res = await ky.post('/api/clubAdmin', {
+                json: { compute: true, adminId },
+              })
               replace(asPath)
             }
           }}

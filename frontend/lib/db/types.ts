@@ -1,11 +1,5 @@
 type MaybePromise<T> = Promise<T> | T
 
-// interface Guild {
-//   id: string
-//   name: string
-//   clubs: Club[]
-// }
-
 type EthereumAddress = string
 type ClubId = string
 type AdminClubId = string
@@ -16,13 +10,16 @@ export interface Club {
   name: string
 
   role: DiscordRole
-  addresses: EthereumAddress[]
   merkleRoot: MerkleRoot
 }
 
 type MerkleRoot = {
   root: string | null
-  publicCommitments: string[]
+  addressToPublicCommitment: Record<
+    EthereumAddress,
+    { commitment: string; signature: string }
+  >
+  addresses: string[]
   zkIdentities: ZkIdentity[]
 }
 
@@ -38,37 +35,80 @@ export interface DiscordRole {
 }
 
 export type AdminAccess = {
-  // clubId: string
   adminId: string
 }
 
-export const ComputeMerkleRootResult = {
+export const ClubResourceCode = {
   SUCCESS: 'success',
-  MISSING_CLUB: 'no_club',
-  NO_ADDRESSES: 'no_addresses',
+  MISSING_CLUB: 'missing_club',
+  ERROR: 'error',
 } as const
-type ComputeMerkleRootResult =
-  typeof ComputeMerkleRootResult[keyof typeof ComputeMerkleRootResult]
 
-export const AddAddressResult = {
-  SUCCESS: 'success',
-  MERKLE_ROOT_COMPUTED: 'merkle_root_computed',
-  MISSING_CLUB: 'no_club',
+export type ClubResource<D, E> =
+  | { type: typeof ClubResourceCode['MISSING_CLUB'] }
+  | (D extends undefined
+      ? { type: typeof ClubResourceCode['SUCCESS'] }
+      : { type: typeof ClubResourceCode['SUCCESS']; data: D })
+  | (E extends undefined
+      ? never
+      : { type: typeof ClubResourceCode['ERROR']; error: E })
+
+export const MISSING_CLUB = { type: ClubResourceCode.MISSING_CLUB } as const
+export const SUCCESS = { type: ClubResourceCode.SUCCESS } as const
+
+export const PublicCommitmentError = {
+  INVALID_SIGNATURE: 'invalid_signature',
+  ADDRESS_NOT_IN_CLUB: 'address_not_in_club',
+  MERKEL_ROOT_COMPUTED: 'merkle_root_computed',
 } as const
-type AddAddressResult = typeof AddAddressResult[keyof typeof AddAddressResult]
+export type PublicCommitmentError =
+  typeof PublicCommitmentError[keyof typeof PublicCommitmentError]
+
+export const MerkleRootComputationError = {
+  NO_PUBLIC_COMMITMENTS: 'no_public_commitments',
+  MERKEL_ROOT_COMPUTED: 'merkle_root_computed',
+} as const
+export type MerkleRootComputationError =
+  | typeof MerkleRootComputationError[keyof typeof MerkleRootComputationError]
+  | { computationFailure: string }
+
+export const AddressResultError = {
+  MERKEL_ROOT_COMPUTED: 'merkle_root_computed',
+} as const
+export type AddressResultError =
+  typeof AddressResultError[keyof typeof AddressResultError]
 
 export interface DB {
   createClub(opts: {
     clubName: string
     role: DiscordRole
   }): MaybePromise<AdminClubId>
-  getAdminPanelData(adminAccess: AdminAccess): MaybePromise<Club | null>
+  getAdminPanelData(
+    adminAccess: AdminAccess
+  ): MaybePromise<ClubResource<Club, undefined>>
   addAddresses(
     args: AdminAccess & { addresses: string[] }
-  ): MaybePromise<AddAddressResult>
+  ): MaybePromise<ClubResource<undefined, AddressResultError>>
+  removeAddresses(
+    args: AdminAccess & { addresses: string[] }
+  ): MaybePromise<ClubResource<undefined, AddressResultError>>
   computeMerkleRoot(
-    adminAccess: AdminAccess
-  ): MaybePromise<ComputeMerkleRootResult>
-  addPublicCommitment(clubId: string, commitment: string): MaybePromise<void>
+    adminAccess: AdminAccess,
+    args: { computeRoot: (commitments: string[]) => string }
+  ): MaybePromise<ClubResource<undefined, MerkleRootComputationError>>
+  addPublicCommitment(
+    clubId: string,
+    {
+      commitment,
+      signature,
+      address,
+      verifySignature,
+    }: {
+      commitment: string
+      signature: string
+      address: string
+      verifySignature: () => boolean
+    }
+  ): MaybePromise<ClubResource<undefined, PublicCommitmentError>>
   addRoleToDiscordUser(clubId: string, zkProof: string): MaybePromise<void>
 }

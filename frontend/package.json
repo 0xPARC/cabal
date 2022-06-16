@@ -32,7 +32,6 @@
     "lodash": "^4.17.21",
     "lowdb": "^3.0.0",
     "next": "latest",
-    "next-runtime": "^2.4.0",
     "nodemon": "^2.0.15",
     "pm2": "^5.2.0",
     "prisma": "^3.11.0",
