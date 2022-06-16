@@ -28,6 +28,7 @@
     "ethers": "5.6",
     "express": "^4.17.3",
     "forever": "^4.0.3",
+    "ky": "^0.30.0",
     "lodash": "^4.17.21",
     "lowdb": "^3.0.0",
     "next": "latest",
@@ -44,7 +45,8 @@
     "swr": "^1.2.2",
     "tiny-invariant": "^1.2.0",
     "tsx": "^3.4.2",
-    "yargs": "^17.4.1"
+    "yargs": "^17.4.1",
+    "zod": "^3.17.3"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.182",

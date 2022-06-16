@@ -17,7 +17,7 @@ export interface Club {
 
   role: DiscordRole
   addresses: EthereumAddress[]
-  merkleRoot: MerkleRoot | null
+  merkleRoot: MerkleRoot
 }
 
 type MerkleRoot = {
@@ -42,9 +42,17 @@ export type AdminAccess = {
   adminId: string
 }
 
+export const ComputeMerkleRootResult = {
+  SUCCESS: 'success',
+  MISSING_CLUB: 'no_club',
+  NO_ADDRESSES: 'no_addresses',
+} as const
+type ComputeMerkleRootResult =
+  typeof ComputeMerkleRootResult[keyof typeof ComputeMerkleRootResult]
+
 export const AddAddressResult = {
   SUCCESS: 'success',
-  ALREADY_ADDED: 'duplicate_address',
+  MERKLE_ROOT_COMPUTED: 'merkle_root_computed',
   MISSING_CLUB: 'no_club',
 } as const
 type AddAddressResult = typeof AddAddressResult[keyof typeof AddAddressResult]
@@ -55,10 +63,12 @@ export interface DB {
     role: DiscordRole
   }): MaybePromise<AdminClubId>
   getAdminPanelData(adminAccess: AdminAccess): MaybePromise<Club | null>
-  addAddress(
-    args: AdminAccess & { address: string }
+  addAddresses(
+    args: AdminAccess & { addresses: string[] }
   ): MaybePromise<AddAddressResult>
-  computeMerkleRoot(adminAccess: AdminAccess): MaybePromise<void>
+  computeMerkleRoot(
+    adminAccess: AdminAccess
+  ): MaybePromise<ComputeMerkleRootResult>
   addPublicCommitment(clubId: string, commitment: string): MaybePromise<void>
   addRoleToDiscordUser(clubId: string, zkProof: string): MaybePromise<void>
 }

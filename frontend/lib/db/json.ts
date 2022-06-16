@@ -1,4 +1,10 @@
-import type { AdminAccess, Club, DB, DiscordRole } from './types'
+import {
+  AdminAccess,
+  Club,
+  ComputeMerkleRootResult,
+  DB,
+  DiscordRole,
+} from './types'
 import { AddAddressResult } from './types'
 import { LowSync, JSONFileSync } from 'lowdb'
 import lodash from 'lodash'
@@ -33,14 +39,15 @@ export default class JSONDB implements DB {
     )
     return club || null
   }
-  addAddress(args: AdminAccess & { address: string }) {
+  addAddresses(args: { adminId: string; addresses: string[] }) {
     const club = this.db.data!!.clubs.find((club) =>
       testAdminId(club, args.adminId)
     )
     if (!club) return AddAddressResult.MISSING_CLUB
-    if (club.addresses.includes(args.address))
-      return AddAddressResult.ALREADY_ADDED
-    club.addresses.push(args.address)
+    const newAddresses = Array.from(
+      new Set([...club.addresses, ...args.addresses])
+    )
+    club.addresses = newAddresses
     this.#updateDb()
     return AddAddressResult.SUCCESS
   }
@@ -58,8 +65,19 @@ export default class JSONDB implements DB {
     return adminId.toString()
   }
 
-  computeMerkleRoot(adminAccess: AdminAccess): void | Promise<void> {
-    throw new Error('Method not implemented.')
+  computeMerkleRoot(adminAccess: AdminAccess) {
+    const club = this.db.data!!.clubs.find((club) =>
+      testAdminId(club, adminAccess.adminId)
+    )
+    if (!club) {
+      return ComputeMerkleRootResult.MISSING_CLUB
+    }
+    if (club.addresses.length === 0) {
+      return ComputeMerkleRootResult.NO_ADDRESSES
+    }
+    club.merkleRoot = { ...club.merkleRoot, root: 'test-root' }
+    this.#updateDb()
+    return ComputeMerkleRootResult.SUCCESS
   }
   addPublicCommitment(
     clubId: string,
