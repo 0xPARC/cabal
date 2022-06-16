@@ -133,7 +133,6 @@ if (guildId !== GLOBAL_DEFAULT) {
 
 const commands = commandsRaw.map((command) => command.toJSON())
 
-console.log(token)
 const rest = new REST({ version: '9' }).setToken(token)
 
 if (args.reset) {
