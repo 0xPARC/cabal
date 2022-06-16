@@ -1,20 +1,17 @@
 import {
-  AddressResultError,
   AdminAccess,
   Club,
   ClubResource,
-  ClubResourceCode,
   DB,
   DiscordRole,
-  MerkleRootComputationError,
-  MISSING_CLUB,
-  PublicCommitmentError,
+  ClubErrors,
   SUCCESS,
 } from './types'
 import { LowSync, JSONFileSync } from 'lowdb'
 import lodash from 'lodash'
 import short from 'short-uuid'
 import _ from 'lodash'
+import { errors } from 'ethers'
 
 class LowWithLodash<T> extends LowSync<T> {
   chain: lodash.ExpChain<this['data']> = lodash.chain(this).get('data')
@@ -23,10 +20,6 @@ class LowWithLodash<T> extends LowSync<T> {
 function testAdminId(c: Club, adminId: string) {
   return c.adminId === adminId
 }
-const merkleRootAlreadyExists = {
-  type: ClubResourceCode.ERROR,
-  error: 'merkle_root_computed',
-} as const
 
 export default class JSONDB implements DB {
   db: LowWithLodash<{ clubs: Club[] }>
@@ -43,15 +36,13 @@ export default class JSONDB implements DB {
     this.db.read()
   }
 
-  #addressChangeError(
-    adminAccess: AdminAccess
-  ): ClubResource<Club, AddressResultError> {
+  #addressChangeError(adminAccess: AdminAccess): ClubResource<Club> {
     const club = this.db.data!!.clubs.find((club) =>
       testAdminId(club, adminAccess.adminId)
     )
-    if (!club) return MISSING_CLUB
-    if (club.merkleRoot.root) return merkleRootAlreadyExists
-    return { type: ClubResourceCode.SUCCESS, data: club }
+    if (!club) return ClubErrors.MISSING_CLUB
+    if (club.merkleRoot.root) return ClubErrors.MERKLE_ROOT_COMPUTED
+    return { type: 'success', data: club }
   }
 
   getAdminPanelData(adminAccess: AdminAccess) {
@@ -59,7 +50,8 @@ export default class JSONDB implements DB {
       testAdminId(club, adminAccess.adminId)
     )
     return (
-      (club && { type: ClubResourceCode.SUCCESS, data: club }) || MISSING_CLUB
+      (club && ({ type: 'success', data: club } as const)) ||
+      ClubErrors.MISSING_CLUB
     )
   }
   addAddresses(args: { adminId: string; addresses: string[] }) {
@@ -113,13 +105,10 @@ export default class JSONDB implements DB {
     const club = this.db.data!!.clubs.find((club) =>
       testAdminId(club, adminAccess.adminId)
     )
-    if (!club) return MISSING_CLUB
-    if (club.merkleRoot.root) return merkleRootAlreadyExists
+    if (!club) return ClubErrors.MISSING_CLUB
+    if (club.merkleRoot.root) return ClubErrors.MERKLE_ROOT_COMPUTED
     if (_.keys(club.merkleRoot.addressToPublicCommitment).length === 0) {
-      return {
-        type: ClubResourceCode.ERROR,
-        error: MerkleRootComputationError.NO_PUBLIC_COMMITMENTS,
-      }
+      return ClubErrors.NO_PUBLIC_COMMITMENTS
     }
 
     try {
@@ -129,10 +118,7 @@ export default class JSONDB implements DB {
         )
       )
     } catch (e: any) {
-      return {
-        type: ClubResourceCode.ERROR,
-        error: { computationFailure: e?.toString() || 'unknown error' },
-      }
+      return ClubErrors.MERKLE_ROOT_COMPUTATION_FAILED
     }
     this.#updateDb()
     return SUCCESS
@@ -143,21 +129,15 @@ export default class JSONDB implements DB {
     { commitment, signature, address, verifySignature }
   ) => {
     const club = this.db.data!!.clubs.find((club) => club.id === clubId)
-    if (!club) return MISSING_CLUB
+    if (!club) return ClubErrors.MISSING_CLUB
     if (!(address in club.merkleRoot.addressToPublicCommitment)) {
-      return {
-        type: ClubResourceCode.ERROR,
-        error: PublicCommitmentError.ADDRESS_NOT_IN_CLUB,
-      }
+      return ClubErrors.ADDRESS_NOT_IN_CLUB
     }
     if (club.merkleRoot.root) {
-      return merkleRootAlreadyExists
+      return ClubErrors.MERKLE_ROOT_COMPUTED
     }
     if (!verifySignature()) {
-      return {
-        type: ClubResourceCode.ERROR,
-        error: PublicCommitmentError.INVALID_SIGNATURE,
-      }
+      return ClubErrors.INVALID_SIGNATURE
     }
 
     club.merkleRoot.addressToPublicCommitment[address] = {
@@ -165,7 +145,7 @@ export default class JSONDB implements DB {
       signature,
     }
     this.#updateDb()
-    return { type: ClubResourceCode.SUCCESS }
+    return SUCCESS
   }
 
   addRoleToDiscordUser(clubId: string, zkProof: string): void | Promise<void> {

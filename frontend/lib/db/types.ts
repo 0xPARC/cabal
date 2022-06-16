@@ -38,64 +38,40 @@ export type AdminAccess = {
   adminId: string
 }
 
-export const ClubResourceCode = {
-  SUCCESS: 'success',
-  MISSING_CLUB: 'missing_club',
-  ERROR: 'error',
+export const ClubErrors = {
+  MISSING_CLUB: { error: 'missing_club' },
+  MERKLE_ROOT_COMPUTED: { error: 'merkle_root_computed' },
+  INVALID_SIGNATURE: { error: 'invalid_signature' },
+  ADDRESS_NOT_IN_CLUB: { error: 'address_not_in_club' },
+  NO_PUBLIC_COMMITMENTS: { error: 'no_public_commitments' },
+  // TODO: Ideally, we'd make this a function that returns an object with a stacktrace
+  // We'd then use a mapped type to create the `Errors` type
+  MERKLE_ROOT_COMPUTATION_FAILED: { error: 'merkle_root_computation_failed' },
 } as const
+export type Errors = typeof ClubErrors[keyof typeof ClubErrors]
 
-export type ClubResource<D, E> =
-  | { type: typeof ClubResourceCode['MISSING_CLUB'] }
-  | (D extends undefined
-      ? { type: typeof ClubResourceCode['SUCCESS'] }
-      : { type: typeof ClubResourceCode['SUCCESS']; data: D })
-  | (E extends undefined
-      ? never
-      : { type: typeof ClubResourceCode['ERROR']; error: E })
+export type ClubResource<D = undefined> =
+  | Errors
+  | (D extends undefined ? { type: 'success' } : { type: 'success'; data: D })
 
-export const MISSING_CLUB = { type: ClubResourceCode.MISSING_CLUB } as const
-export const SUCCESS = { type: ClubResourceCode.SUCCESS } as const
-
-export const PublicCommitmentError = {
-  INVALID_SIGNATURE: 'invalid_signature',
-  ADDRESS_NOT_IN_CLUB: 'address_not_in_club',
-  MERKEL_ROOT_COMPUTED: 'merkle_root_computed',
-} as const
-export type PublicCommitmentError =
-  typeof PublicCommitmentError[keyof typeof PublicCommitmentError]
-
-export const MerkleRootComputationError = {
-  NO_PUBLIC_COMMITMENTS: 'no_public_commitments',
-  MERKEL_ROOT_COMPUTED: 'merkle_root_computed',
-} as const
-export type MerkleRootComputationError =
-  | typeof MerkleRootComputationError[keyof typeof MerkleRootComputationError]
-  | { computationFailure: string }
-
-export const AddressResultError = {
-  MERKEL_ROOT_COMPUTED: 'merkle_root_computed',
-} as const
-export type AddressResultError =
-  typeof AddressResultError[keyof typeof AddressResultError]
+export const SUCCESS = { type: 'success' } as const
 
 export interface DB {
   createClub(opts: {
     clubName: string
     role: DiscordRole
   }): MaybePromise<AdminClubId>
-  getAdminPanelData(
-    adminAccess: AdminAccess
-  ): MaybePromise<ClubResource<Club, undefined>>
+  getAdminPanelData(adminAccess: AdminAccess): MaybePromise<ClubResource<Club>>
   addAddresses(
     args: AdminAccess & { addresses: string[] }
-  ): MaybePromise<ClubResource<undefined, AddressResultError>>
+  ): MaybePromise<ClubResource>
   removeAddresses(
     args: AdminAccess & { addresses: string[] }
-  ): MaybePromise<ClubResource<undefined, AddressResultError>>
+  ): MaybePromise<ClubResource>
   computeMerkleRoot(
     adminAccess: AdminAccess,
     args: { computeRoot: (commitments: string[]) => string }
-  ): MaybePromise<ClubResource<undefined, MerkleRootComputationError>>
+  ): MaybePromise<ClubResource>
   addPublicCommitment(
     clubId: string,
     {
@@ -109,6 +85,6 @@ export interface DB {
       address: string
       verifySignature: () => boolean
     }
-  ): MaybePromise<ClubResource<undefined, PublicCommitmentError>>
+  ): MaybePromise<ClubResource>
   addRoleToDiscordUser(clubId: string, zkProof: string): MaybePromise<void>
 }

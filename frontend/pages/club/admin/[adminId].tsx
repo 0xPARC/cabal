@@ -27,15 +27,16 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async ({
 }) => {
   const adminId = getAdminId(params)
   const adminPanelData = await db.getAdminPanelData({ adminId })
-  return adminPanelData
-    ? { props: { club: adminPanelData, adminId } }
+  return 'data' in adminPanelData
+    ? { props: { club: adminPanelData.data, adminId } }
     : { notFound: true }
 }
 
 export default function ({ club, adminId }: PageProps) {
-  const { addresses, merkleRoot } = club
+  const { merkleRoot } = club
   const { asPath, replace } = useRouter()
   const rootHash = merkleRoot.root || null
+  const addresses = merkleRoot.addresses
 
   return (
     <div className="flex min-h-screen flex-col bg-gray-700 p-8 text-white">
@@ -49,7 +50,9 @@ export default function ({ club, adminId }: PageProps) {
             )
             const addresses = newAddresses?.split(',')
             if (!addresses || addresses.length === 0) return
-            await ky.post(`/api/clubAdmin`, { json: { addresses, adminId } })
+            await ky.post(`/api/club/admin/address`, {
+              json: { addresses, adminId },
+            })
             console.log('refreshing')
             replace(asPath)
           }}
@@ -64,7 +67,7 @@ export default function ({ club, adminId }: PageProps) {
               'Once you do this, you cannot add any more addresses. Proceed?'
             )
             if (proceed) {
-              const res = await ky.post('/api/clubAdmin', {
+              await ky.post('/api/club/admin/address', {
                 json: { compute: true, adminId },
               })
               replace(asPath)
