@@ -3,6 +3,7 @@
 
 *.zkey
 *.wasm
+.env
 
 tree.json
 sample_proof.json
